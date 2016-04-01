@@ -51,7 +51,9 @@
   $currencies = new currencies();
 
   require(DIR_WS_INCLUDES . 'template_top.php');
+?>
 
+  <?php
   $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
   $oID = (isset($_GET['oID']) ? tep_db_prepare_input($_GET['oID']) : null);
   $order = new order($oID);
@@ -79,11 +81,15 @@
     ////
     // Edit Order
       case 'edit':
+              if (!$oID) {
+//        $messageStack->add(ERROR_NO_ORDER_SELECTED, 'error');
+          break;
+          }
+
         require('order_editor/oe_edit.php');
         break; // end case 'edit':
     } // end switch $action
   }
-  
 
 ?>
 
@@ -94,10 +100,13 @@
   <?php include('order_editor/javascript.php');
       //because if you haven't got your javascript, what have you got?
       ?>
+  <script>
+  $(function() {
+    $( document ).tooltip();
+  });
+  </script>
 <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,300italic' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="edit_orders.css">
-
-
  
 <div id="barullo" style="width: 100%;">
 

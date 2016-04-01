@@ -1,8 +1,5 @@
 <?php
-        if (!$oID) {
-        $messageStack->add(ERROR_NO_ORDER_SELECTED, 'error');
-          break;
-          }
+
 //        $oID = tep_db_prepare_input($_GET['oID']);
         $orders_query = tep_db_query("select orders_id from " . TABLE_ORDERS . " where orders_id = '" . (int)$oID . "'");
         $order_exists = true;

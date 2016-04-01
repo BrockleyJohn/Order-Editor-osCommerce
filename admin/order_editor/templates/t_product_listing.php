@@ -146,8 +146,7 @@
           <br>
             <div>
             <?php echo tep_draw_button(TEXT_ADD_NEW_PRODUCT, 'plus', tep_href_link('edit_orders_add_product.php',
-            'oID=' . $_GET['oID'] . '&step=1'
-            )); ?>
+            'oID=' . $_GET['oID'] . '&step=1')); ?>
             <a href="<?php echo tep_href_link('edit_orders_add_product.php', 'oID=' . $_GET['oID'] . '&step=1'); ?>" target="addProducts" onClick="openWindow('<?php echo tep_href_link('edit_orders_add_product.php', 'oID=' . $_GET['oID'] . '&step=1'); ?>','addProducts');return false"><?php echo tep_image_button('button_add_article.gif', TEXT_ADD_NEW_PRODUCT); ?>
             </a><input type="hidden" name="subaction" value="">
             </div>
@@ -228,7 +227,7 @@
        }
 
       if ($order->info['currency'] != DEFAULT_CURRENCY) echo '                    <td align="right" class="dataTableContent" nowrap>' . $order->totals[$i]['text'] . '</td>' . "\n";
-      echo '                  </tr>' . "\n";
+//      echo '                  </tr>' . "\n";
     }
   }
 ?>

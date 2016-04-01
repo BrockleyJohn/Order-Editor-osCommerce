@@ -25,8 +25,8 @@
         // Agrega los campos definidos en $_POST en un array
         $order_data_array = array(
         'customers_name' => tep_db_input(tep_db_prepare_input($_POST['update_customer_name'])),
-        'customers_nick' => tep_db_input(tep_db_prepare_input($_POST['update_customer_nick'])),
-        'billing_nif' => tep_db_input(tep_db_prepare_input($_POST['update_customer_nif'])),
+//        'customers_nick' => tep_db_input(tep_db_prepare_input($_POST['update_customer_nick'])),
+//        'billing_nif' => tep_db_input(tep_db_prepare_input($_POST['update_customer_nif'])),
         'customers_company' => tep_db_input(tep_db_prepare_input($_POST['update_customer_company'])),
         'customers_street_address' => tep_db_input(tep_db_prepare_input($_POST['update_customer_street_address'])),
         'customers_suburb' => tep_db_input(tep_db_prepare_input($_POST['update_customer_suburb'])),
@@ -62,10 +62,6 @@
         'cc_owner' => tep_db_prepare_input($_POST['update_info_cc_owner']),
         'cc_number' => tep_db_input(tep_db_prepare_input($_POST['update_info_cc_number'])),
         'cc_expires' => tep_db_prepare_input($_POST['update_info_cc_expires']),
-    // custom fields - delete
-        'orders_peso' => tep_db_prepare_input($_POST['update_peso']),
-        'orders_peso_vol' => tep_db_prepare_input($_POST['update_peso_vol']),
-    // custom fields - delete
         'last_modified' => 'now()');
 
         tep_db_perform(TABLE_ORDERS, $order_data_array, 'update', 'orders_id = \'' . tep_db_input($oID) . '\'');
@@ -136,7 +132,7 @@
 
             // First we do a stock check
             if ($products_details['qty'] != $order_products['products_quantity']){
-            $quantity_difference = ($products_details['qty'] - $order_products['products_quantity']);
+              $quantity_difference = ($products_details['qty'] - $order_products['products_quantity']);
               if (STOCK_LIMITED == 'true'){
                 tep_db_query("UPDATE " . TABLE_PRODUCTS . " SET
                               products_quantity = products_quantity - " . $quantity_difference . ",
@@ -273,11 +269,10 @@
                                 AND orders_status_history_id = '$orders_status_history_id';";
                                 tep_db_query($Query);
               } else {
-                $Query = "UPDATE " . TABLE_ORDERS_STATUS_HISTORY . " SET
-                          comments = '" . $comments_details["comments"] . "'
-                          WHERE orders_id = '" . (int)$oID . "'
-                          AND orders_status_history_id = '$orders_status_history_id';";
-                tep_db_query($Query);
+                tep_db_query ("UPDATE " . TABLE_ORDERS_STATUS_HISTORY . " SET
+                               comments = '" . $comments_details["comments"] . "'
+                               WHERE orders_id = '" . (int)$oID . "'
+                               AND orders_status_history_id = '$orders_status_history_id';");
               }
           }
         }//end comments update section
@@ -303,7 +298,7 @@
             } // end if ($ot_class == "ot_surcharge")
           } //end foreach
         } //end if is_array
-/* */
+
       if (tep_not_null($shipping['id'])) {
         tep_db_query("UPDATE " . TABLE_ORDERS . " SET shipping_module = '" . $shipping['id'] . "' WHERE orders_id = '" . (int)$oID . "'");
       }
@@ -419,7 +414,7 @@
                 $written_ot_totals_array[] = $ot_class;
                 $written_ot_titles_array[] = $ot_title;
                 $j++;
-                echo $order_totals[$i]['code'] . "<br>";  ////for debugging- use of this results in errors
+                // echo $order_totals[$i]['code'] . "<br>";  ////for debugging- use of this results in errors
 
               } elseif ($new_ot_total) { //also within 6
                 $order->info['total'] += ($order_totals[$i]['value']*(-1));
@@ -496,8 +491,7 @@
         if (isset($_POST['subaction'])) {
           switch($_POST['subaction']) {
             case 'add_product':
-              // $messageStack->add_session('ho ho ho!', 'success');
-              tep_redirect(tep_href_link(FILENAME_ORDERS_EDIT, tep_get_all_get_params(array('action')) . 'action=edit#products'));
+              tep_redirect(tep_href_link('edit_orders.php', tep_get_all_get_params(array('action')) . 'action=edit#products'));
               break;
 
           }
@@ -512,7 +506,7 @@
     if ( (isset($_POST['nC1'])) || (isset($_POST['nC2'])) || (isset($_POST['nC3'])) ) {
     //then the user selected the option of sending a new email
 
-    tep_redirect(tep_href_link(FILENAME_ORDERS_EDIT, tep_get_all_get_params(array('action')) . 'action=email'));
+    tep_redirect(tep_href_link('edit_orders.php', tep_get_all_get_params(array('action')) . 'action=email'));
     //redirect to the email case
 
   } else  {
@@ -522,6 +516,6 @@
       $messageStack->add_session(SUCCESS_ORDER_UPDATED, 'success');
     }
 
-    tep_redirect(tep_href_link(FILENAME_ORDERS_EDIT, tep_get_all_get_params(array('action')) . 'action=edit'));
+    tep_redirect(tep_href_link('edit_orders.php', tep_get_all_get_params(array('action')) . 'action=edit'));
 
     }

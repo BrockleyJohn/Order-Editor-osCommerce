@@ -3,7 +3,7 @@
                 <td class="dataTableContent">
                 <table width="100%">
                   <tr class="dataTableHeadingRow">
-                    <td class="dataTableHeadingContent" valign="top"><?php echo ENTRY_SHIPPING_ADDRESS; ?>  </td>
+                    <td class="dataTableHeadingContent" valign="top" title="HELLO"><?php echo ENTRY_SHIPPING_ADDRESS; ?>  </td>
                   </tr>
                 </table>
                 </td>

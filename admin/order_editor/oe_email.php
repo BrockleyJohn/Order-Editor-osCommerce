@@ -1,5 +1,6 @@
 <?php
 //        $oID = tep_db_prepare_input($_GET['oID']);
+
         $order = new manualOrder($oID);
 
         for ($i=0, $n=sizeof($order->products); $i<$n; $i++) {
@@ -14,12 +15,12 @@
      $products_ordered .= $order->products[$i]['qty'] . ' x ' . $order->products[$i]['name'] . $products_model . ' = ' . $currencies->format(tep_add_tax($order->products[$i]['final_price'], $order->products[$i]['tax']) * $order->products[$i]['qty'], true, $order->info['currency'], $order->info['currency_value']) . $products_ordered_attributes . "\n";
        }
 
-        //Build the email
-        $email_order = STORE_NAME . "\n" .
-                       EMAIL_SEPARATOR . "\n" .
-                       EMAIL_TEXT_ORDER_NUMBER . ' ' . (int)$oID . "\n" .
-                       EMAIL_TEXT_INVOICE_URL . ' ' . tep_catalog_href_link(FILENAME_CATALOG_ACCOUNT_HISTORY_INFO, 'order_id=' . (int)$oID, 'SSL') . "\n" .
-                       EMAIL_TEXT_DATE_MODIFIED . ' ' . strftime(DATE_FORMAT_LONG) . "\n\n";
+       //Build the email
+       $email_order = STORE_NAME . "\n" .
+                      EMAIL_SEPARATOR . "\n" .
+                      EMAIL_TEXT_ORDER_NUMBER . ' ' . (int)$oID . "\n" .
+                      EMAIL_TEXT_INVOICE_URL . ' ' . tep_catalog_href_link(FILENAME_CATALOG_ACCOUNT_HISTORY_INFO, 'order_id=' . (int)$oID, 'SSL') . "\n" .
+                      EMAIL_TEXT_DATE_MODIFIED . ' ' . strftime(DATE_FORMAT_LONG) . "\n\n";
 
         $email_order .= EMAIL_TEXT_PRODUCTS . "\n" .
                         EMAIL_SEPARATOR . "\n" .
@@ -80,8 +81,8 @@
         $email_order .= EMAIL_TEXT_FOOTER . "\n\n";
       }
 
-      //code for plain text emails which changes the â‚¬ sign to EUR, otherwise the email will show ? instead of â‚¬
-      $email_order = str_replace("â‚¬","EUR",$email_order);
+    //code for plain text emails which changes the € sign to EUR, otherwise the email will show ? instead of €
+    $email_order = str_replace("€","EUR",$email_order);
     $email_order = str_replace("&nbsp;"," ",$email_order);
 
     //code which replaces the <br> tags within EMAIL_TEXT_PAYMENT_INFO and EMAIL_TEXT_FOOTER with the proper \n
