@@ -55,15 +55,9 @@
                           'shipping_method' => $shipping['title'],
                           'shipping_cost' => $shipping['cost'],
                           'shipping_id' => $order['shipping_module'],
-                          'orders_peso' => $order['orders_peso'],
-                          'orders_peso_vol' => $order['orders_peso_vol'],
-			     'box_l' => $order['box_l'],
-			     'box_a' => $order['box_a'],
-			     'box_h' => $order['box_h'],
                           'subtotal' => 0,
                           'tax' => 0,
-                          'tax_groups' => array(),
-                          'language_id' => $order['language_id']);
+                          'tax_groups' => array());
                           
       $this->customer = array('id' => $order['customers_id'],
 	                          'name' => $order['customers_name'],

@@ -32,17 +32,21 @@
   require(DIR_WS_CLASSES . 'currencies.php');
   $currencies = new currencies();
 
+  
   //$action
   //all variables are sent by $_GET only or by $_POST only, never together
   if (sizeof($_GET) > 0) {
-     $action = $_GET['action'];
+
+    $action = $_GET['action'];
+    $oID = (isset($_GET['oID']) ? tep_db_prepare_input($_GET['oID']) : '');
   } elseif (sizeof($_POST) > 0) {
-   $action = $_POST['action'];
+    $action = $_POST['action'];
+    $oID = (isset($_POST['oID']) ? tep_db_prepare_input($_POST['oID']) : '');
    }
 
   //1.  Update most the orders table
   if ($action == 'update_order_field') {
-   tep_db_query("UPDATE " . TABLE_ORDERS . " SET " . $_GET['field'] . " = '" . oe_iconv($_GET['new_value']) . "' WHERE orders_id = '" . $_GET['oID'] . "'");
+   tep_db_query("UPDATE " . TABLE_ORDERS . " SET " . $_GET['field'] . " = '" . oe_iconv($_GET['new_value']) . "' WHERE orders_id = '" . $oID . "'");
 
 
     //generate responseText
@@ -59,7 +63,7 @@
       $order_query = tep_db_query("
       SELECT products_id, products_quantity
       FROM " . TABLE_ORDERS_PRODUCTS . "
-      WHERE orders_id = '" . $_GET['oID'] . "'
+      WHERE orders_id = '" . $oID . "'
       AND orders_products_id = '" . $_GET['pid'] . "'");
       $orders_product_info = tep_db_fetch_array($order_query);
 
@@ -80,7 +84,7 @@
       } //end if ($_GET['new_value'] != $orders_product_info['products_quantity']){
     }//end if ($_GET['field'] = 'products_quantity'
 
-    tep_db_query("UPDATE " . TABLE_ORDERS_PRODUCTS . " SET " . $_GET['field'] . " = '" . oe_iconv($_GET['new_value']) . "' WHERE orders_products_id = '" . $_GET['pid'] . "' AND orders_id = '" . $_GET['oID'] . "'");
+    tep_db_query("UPDATE " . TABLE_ORDERS_PRODUCTS . " SET " . $_GET['field'] . " = '" . oe_iconv($_GET['new_value']) . "' WHERE orders_products_id = '" . $_GET['pid'] . "' AND orders_id = '" . $oID . "'");
 
 
 
@@ -91,7 +95,7 @@
 
   //3.  Update the orders_products table for price and final_price (interdependent values)
   if ($action == 'update_product_value_field') {
-    tep_db_query("UPDATE " . TABLE_ORDERS_PRODUCTS . " SET products_price = '" . tep_db_input(tep_db_prepare_input($_GET['price'])) . "', final_price = '" . tep_db_input(tep_db_prepare_input($_GET['final_price'])) . "' WHERE orders_products_id = '" . $_GET['pid'] . "' AND orders_id = '" . $_GET['oID'] . "'");
+    tep_db_query("UPDATE " . TABLE_ORDERS_PRODUCTS . " SET products_price = '" . tep_db_input(tep_db_prepare_input($_GET['price'])) . "', final_price = '" . tep_db_input(tep_db_prepare_input($_GET['final_price'])) . "' WHERE orders_products_id = '" . $_GET['pid'] . "' AND orders_id = '" . $oID . "'");
 
     //generate responseText
     echo TABLE_ORDERS_PRODUCTS;
@@ -99,24 +103,19 @@
   }
 
     //4.  Update the orders_products_attributes table
-if ($action == 'update_attributes_field') {
-
-    tep_db_query("UPDATE " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . " SET " . $_GET['field'] . " = '" . oe_iconv($_GET['new_value']) . "' WHERE orders_products_attributes_id = '" . $_GET['aid'] . "' AND orders_products_id = '" . $_GET['pid'] . "' AND orders_id = '" . $_GET['oID'] . "'");
+  if ($action == 'update_attributes_field') {
+    tep_db_query("UPDATE " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . " SET " . $_GET['field'] . " = '" . oe_iconv($_GET['new_value']) . "' WHERE orders_products_attributes_id = '" . $_GET['aid'] . "' AND orders_products_id = '" . $_GET['pid'] . "' AND orders_id = '" . $oID . "'");
 
     if (isset($_GET['final_price'])) {
-
-    tep_db_query("UPDATE " . TABLE_ORDERS_PRODUCTS . " SET final_price = '" . tep_db_input(tep_db_prepare_input($_GET['final_price'])) . "' WHERE orders_products_id = '" . $_GET['pid'] . "' AND orders_id = '" . $_GET['oID'] . "'");
-
+      tep_db_query("UPDATE " . TABLE_ORDERS_PRODUCTS . " SET final_price = '" . tep_db_input(tep_db_prepare_input($_GET['final_price'])) . "' WHERE orders_products_id = '" . $_GET['pid'] . "' AND orders_id = '" . $oID . "'");
     }
-
     //generate responseText
     echo $_GET['field'];
-
   }
 
     //5.  Update the orders_products_download table
 if ($action == 'update_downloads') {
-    tep_db_query("UPDATE " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . " SET " . $_GET['field'] . " = '" . tep_db_input(tep_db_prepare_input($_GET['new_value'])) . "' WHERE orders_products_download_id = '" . $_GET['did'] . "' AND orders_products_id = '" . $_GET['pid'] . "' AND orders_id = '" . $_GET['oID'] . "'");
+    tep_db_query("UPDATE " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . " SET " . $_GET['field'] . " = '" . tep_db_input(tep_db_prepare_input($_GET['new_value'])) . "' WHERE orders_products_download_id = '" . $_GET['did'] . "' AND orders_products_id = '" . $_GET['pid'] . "' AND orders_id = '" . $oID . "'");
 
    //generate responseText
     echo $_GET['field'];
@@ -125,7 +124,7 @@ if ($action == 'update_downloads') {
 
   //6. Update the currency of the order
   if ($action == 'update_currency') {
-      tep_db_query("UPDATE " . TABLE_ORDERS . " SET currency = '" . tep_db_input(tep_db_prepare_input($_GET['currency'])) . "', currency_value = '" . tep_db_input(tep_db_prepare_input($_GET['currency_value'])) . "' WHERE orders_id = '" . $_GET['oID'] . "'");
+      tep_db_query("UPDATE " . TABLE_ORDERS . " SET currency = '" . tep_db_input(tep_db_prepare_input($_GET['currency'])) . "', currency_value = '" . tep_db_input(tep_db_prepare_input($_GET['currency_value'])) . "' WHERE orders_id = '" . $oID . "'");
 
      //generate responseText
     echo $_GET['currency'];
@@ -136,11 +135,11 @@ if ($action == 'update_downloads') {
   //7.  Update most any field in the orders_products table
   if ($action == 'delete_product_field') {
 
-                 //  Update Inventory Quantity
+            //  Update Inventory Quantity
             $order_query = tep_db_query("
             SELECT products_id, products_quantity
             FROM " . TABLE_ORDERS_PRODUCTS . "
-            WHERE orders_id = '" . $_GET['oID'] . "'
+            WHERE orders_id = '" . $oID . "'
             AND orders_products_id = '" . $_GET['pid'] . "'");
             $order = tep_db_fetch_array($order_query);
 
@@ -157,15 +156,15 @@ if ($action == 'update_downloads') {
                                     }
 
                     tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS . "
-                                  WHERE orders_id = '" . $_GET['oID'] . "'
+                                  WHERE orders_id = '" . $oID . "'
                                   AND orders_products_id = '" . $_GET['pid'] . "'");
 
                     tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . "
-                                  WHERE orders_id = '" . $_GET['oID'] . "'
+                                  WHERE orders_id = '" . $oID . "'
                                   AND orders_products_id = '" . $_GET['pid'] . "'");
 
                     tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . "
-                                  WHERE orders_id = '" . $_GET['oID'] . "'
+                                  WHERE orders_id = '" . $oID . "'
                                   AND orders_products_id = '" . $_GET['pid'] . "'");
 
       //generate responseText
@@ -176,50 +175,40 @@ if ($action == 'update_downloads') {
         //delete or update comments
   //8. Update the orders_status_history table
   if ($action == 'delete_comment') {
-
-    tep_db_query("DELETE FROM " . TABLE_ORDERS_STATUS_HISTORY . " 
-                 WHERE orders_status_history_id = '" . $_GET['cID'] . "' AND orders_id = '" . $_GET['oID'] . "'");
-
+    tep_db_query("DELETE FROM " . TABLE_ORDERS_STATUS_HISTORY . " WHERE orders_status_history_id = '" . $_GET['cID'] . "' AND orders_id = '" . $oID . "'");
     //generate responseText
     echo TABLE_ORDERS_STATUS_HISTORY;
-
-    }
-
+  }
 
   //9. Update the orders_status_history table
   if ($action == 'update_comment') {
-
-                tep_db_query("UPDATE " . TABLE_ORDERS_STATUS_HISTORY . " SET
-                              comments = '" . oe_iconv($_GET['comment']) . "'
-                              WHERE orders_status_history_id = '" . $_GET['cID'] . "' AND orders_id = '" . $_GET['oID'] . "'");
-
+    tep_db_query("UPDATE " . TABLE_ORDERS_STATUS_HISTORY . " SET comments = '" . oe_iconv($_GET['comment']) . "' WHERE orders_status_history_id = '" . $_GET['cID'] . "' AND orders_id = '" . $oID . "'");
     //generate responseText
     echo TABLE_ORDERS_STATUS_HISTORY;
-
-    }
+  }
 
 
   //10. Reload the shipping and order totals block
     if ($action == 'reload_totals') {
 
-        $oID = $_POST['oID'];
-        $shipping = array();
+      $oID = $_POST['oID'];
+      $shipping = array();
 
-        if (is_array($_POST['update_totals'])) {
-          foreach($_POST['update_totals'] as $total_index => $total_details) {
-            extract($total_details, EXTR_PREFIX_ALL, "ot");
-            if ($ot_class == "ot_shipping") {
+      if (is_array($_POST['update_totals'])) {
+        foreach($_POST['update_totals'] as $total_index => $total_details) {
+          extract($total_details, EXTR_PREFIX_ALL, "ot");
+          if ($ot_class == "ot_shipping") {
 
-              $shipping['cost'] = $ot_value;
-              $shipping['title'] = $ot_title;
-              $shipping['id'] = $ot_id;
+            $shipping['cost'] = $ot_value;
+            $shipping['title'] = $ot_title;
+            $shipping['id'] = $ot_id;
 
-           } // end if ($ot_class == "ot_shipping")
-          } //end foreach
-        } //end if is_array
+          } // end if ($ot_class == "ot_shipping")
+        } //end foreach
+      } //end if is_array
 
       if (tep_not_null($shipping['id'])) {
-        tep_db_query("UPDATE " . TABLE_ORDERS . " SET shipping_module = '" . $shipping['id'] . "' WHERE orders_id = '" . $_POST['oID'] . "'");
+        tep_db_query("UPDATE " . TABLE_ORDERS . " SET shipping_module = '" . $shipping['id'] . "' WHERE orders_id = '" . $oID . "'");
       }
 
       $order = new manualOrder($oID);
@@ -234,9 +223,22 @@ if ($action == 'update_downloads') {
       $shipping_modules = new shipping;
       $shipping_quotes = $shipping_modules->quote();
 
+      $module = substr($GLOBALS['shipping']['id'], 0, strpos($GLOBALS['shipping']['id'], '_'));
+//        echo $module;
+// echo $shipping['title'];
+// echo $shipping  ->class;
+//      $tax = tep_get_tax_rate($GLOBALS[$module]->tax_class, $order->delivery['country']['id'], $order->delivery['zone_id']);
+        $tax = tep_get_tax_rate($shipping_modules, $order->delivery['country']['id'], $order->delivery['zone_id']);
+///      $tax = tep_get_tax_rate($module->tax_class, $order->delivery['country']['id'], $order->delivery['zone_id']);
+//      echo $$tax ."TAX";
+
+
+
         if (DISPLAY_PRICE_WITH_TAX == 'true') {//extract the base shipping cost or the ot_shipping module will add tax to it again
-          $module = substr($GLOBALS['shipping']['id'], 0, strpos($GLOBALS['shipping']['id'], '_'));
-          $tax = tep_get_tax_rate($GLOBALS[$module]->tax_class, $order->delivery['country']['id'], $order->delivery['zone_id']);
+//        echo $order->info['total'] . '<br>';
+//          echo $order->info['total'] . '<br>';
+//          echo $order->info['shipping_cost'] . '<br>';
+
           $order->info['total'] -= ( $order->info['shipping_cost'] - ($order->info['shipping_cost'] / (1 + ($tax /100))) );
           $order->info['shipping_cost'] = ($order->info['shipping_cost'] / (1 + ($tax /100)));
         }
@@ -251,27 +253,25 @@ if ($action == 'update_downloads') {
         $current_ot_titles_array = array();
         $written_ot_totals_array = array();
         $written_ot_titles_array = array();
-    //how many weird arrays can I make today?
-
-        $current_ot_totals_query = tep_db_query("select class, title from " . TABLE_ORDERS_TOTAL . " where orders_id = '" . (int)$oID . "' order by sort_order");
+        //how many weird arrays can I make today?
+        $current_ot_totals_query = tep_db_query("select class, title from " . TABLE_ORDERS_TOTAL . " where orders_id = '" . $oID . "' order by sort_order");
         while ($current_ot_totals = tep_db_fetch_array($current_ot_totals_query)) {
           $current_ot_totals_array[] = $current_ot_totals['class'];
           $current_ot_titles_array[] = $current_ot_totals['title'];
         }
 
-        tep_db_query("DELETE FROM " . TABLE_ORDERS_TOTAL . " WHERE orders_id = '" . (int)$oID . "'");
+        tep_db_query("DELETE FROM " . TABLE_ORDERS_TOTAL . " WHERE orders_id = '" . $oID . "'");
 
         $j=1; //giving something a sort order of 0 ain't my bag baby
-    $new_order_totals = array();
+        $new_order_totals = array();
 
-      if (is_array($_POST['update_totals'])) { //1
+        if (is_array($_POST['update_totals'])) { //1
           foreach($_POST['update_totals'] as $total_index => $total_details) { //2
             extract($total_details, EXTR_PREFIX_ALL, "ot");
 // cambiado por JM http://comercianos.com/alguien-usa-order-editor-t734.html
 //            if (!strstr($ot_class, 'ot_custom')) { //3
 //            if ((strstr($ot_class, 'ot_subtotal')) || (strstr($ot_class, 'ot_total'))) { //3
             if ((strstr($ot_class, 'ot_subtotal')) || (strstr($ot_class, 'ot_total')) || (strstr($ot_class, 'ot_shipping'))) { //3
-
 
 // RusNN order totals correction for right work BOF
 
@@ -285,6 +285,7 @@ if ($action == 'update_downloads') {
                          if (!$found) continue;
 
 // RusNN order totals correction for right work EOF
+
              for ($i=0, $n=sizeof($order_totals); $i<$n; $i++) { //4
 
         if ($order_totals[$i]['code'] == 'ot_tax') { //5
@@ -303,35 +304,34 @@ if ($action == 'update_downloads') {
                                               'code' => $order_totals[$i]['code'],
                                               'sort_order' => $j);
                 $written_ot_totals_array[] = $ot_class;
-        $written_ot_titles_array[] = $ot_title;
-        $j++;
+                $written_ot_titles_array[] = $ot_title;
+                $j++;
                 } else { //within 7
 
-          $order->info['total'] += ($ot_value*(-1));
-          $written_ot_totals_array[] = $ot_class;
-          $written_ot_titles_array[] = $ot_title;
+                  $order->info['total'] += ($ot_value*(-1));
+                  $written_ot_totals_array[] = $ot_class;
+                  $written_ot_titles_array[] = $ot_title;
 
                 } //end 7
 
-        } elseif ( ($new_ot_total) && (!in_array($order_totals[$i]['title'], $current_ot_titles_array)) ) { //within 6
-
+              } elseif ( ($new_ot_total) && (!in_array($order_totals[$i]['title'], $current_ot_titles_array)) ) { //within 6
                 $new_order_totals[] = array('title' => $order_totals[$i]['title'],
                                             'text' => $order_totals[$i]['text'],
                                             'value' => $order_totals[$i]['value'],
                                             'code' => $order_totals[$i]['code'],
                                             'sort_order' => $j);
                 $current_ot_totals_array[] = $order_totals[$i]['code'];
-        $current_ot_titles_array[] = $order_totals[$i]['title'];
-        $written_ot_totals_array[] = $ot_class;
-        $written_ot_titles_array[] = $ot_title;
+                $current_ot_titles_array[] = $order_totals[$i]['title'];
+                $written_ot_totals_array[] = $ot_class;
+                $written_ot_titles_array[] = $ot_title;
                 $j++;
                 // echo $order_totals[$i]['code'] . "<br>";  ////for debugging- use of this results in errors
 
-        } elseif ($new_ot_total) { //also within 6
+              } elseif ($new_ot_total) { //also within 6
                 $order->info['total'] += ($order_totals[$i]['value']*(-1));
                 $current_ot_totals_array[] = $order_totals[$i]['code'];
-        $written_ot_totals_array[] = $ot_class;
-        $written_ot_titles_array[] = $ot_title;
+                $written_ot_totals_array[] = $ot_class;
+                $written_ot_titles_array[] = $ot_title;
               }//end 6
            }//end 4
          } elseif ( (tep_not_null($ot_value)) && (tep_not_null($ot_title)) ) { // this modifies if (!strstr($ot_class, 'ot_custom')) { //3
@@ -343,43 +343,42 @@ if ($action == 'update_downloads') {
                                         'code' => ((strstr($ot_class, 'ot_custom')) ? 'ot_custom_' . $j : $ot_class),
                                         'sort_order' => $j);
             $order->info['total'] += $ot_value;
-      $written_ot_totals_array[] = $ot_class;
-        $written_ot_titles_array[] = $ot_title;
+
+            $written_ot_totals_array[] = $ot_class;
+            $written_ot_titles_array[] = $ot_title;
             $j++;
           } //end 3
 
-        //save ot_skippy from certain annihilation
-       if ( (!in_array($ot_class, $written_ot_totals_array)) && (!in_array($ot_title, $written_ot_titles_array)) && (tep_not_null($ot_value)) && (tep_not_null($ot_title)) && ($ot_class != 'ot_tax') && ($ot_class != 'ot_loworderfee') ) { //7
-      //this is supposed to catch the oddball components that don't show up in $order_totals
-
+            //save ot_skippy from certain annihilation
+             if ( (!in_array($ot_class, $written_ot_totals_array)) && (!in_array($ot_title, $written_ot_titles_array)) && (tep_not_null($ot_value)) && (tep_not_null($ot_title)) && ($ot_class != 'ot_tax') && ($ot_class != 'ot_loworderfee') ) { //7
+            //this is supposed to catch the oddball components that don't show up in $order_totals
             $new_order_totals[] = array(
-                  'title' => $ot_title,
+                            'title' => $ot_title,
                             'text' => $currencies->format($ot_value, true, $order->info['currency'], $order->info['currency_value']),
                             'value' => $ot_value,
                             'code' => $ot_class,
                             'sort_order' => $j);
                //$current_ot_totals_array[] = $order_totals[$i]['code'];
-        //$current_ot_titles_array[] = $order_totals[$i]['title'];
-        $written_ot_totals_array[] = $ot_class;
-        $written_ot_titles_array[] = $ot_title;
+                //$current_ot_titles_array[] = $order_totals[$i]['title'];
+                $written_ot_totals_array[] = $ot_class;
+                $written_ot_titles_array[] = $ot_title;
                 $j++;
 
-         } //end 7
+          } //end 7
         } //end 2
-    } else {//within 1
-    // $_POST['update_totals'] is not an array => write in all order total components that have been generated by the sundry modules
-     for ($i=0, $n=sizeof($order_totals); $i<$n; $i++) { //8
-                    $new_order_totals[] = array('title' => $order_totals[$i]['title'],
-                                            'text' => $order_totals[$i]['text'],
-                                            'value' => $order_totals[$i]['value'],
-                                            'code' => $order_totals[$i]['code'],
-                                            'sort_order' => $j);
+      } else {//within 1
+      // $_POST['update_totals'] is not an array => write in all order total components that have been generated by the sundry modules
+        for ($i=0, $n=sizeof($order_totals); $i<$n; $i++) { //8
+          $new_order_totals[] = array('title' => $order_totals[$i]['title'],
+                                      'text' => $order_totals[$i]['text'],
+                                      'value' => $order_totals[$i]['value'],
+                                      'code' => $order_totals[$i]['code'],
+                                      'sort_order' => $j);
                 $j++;
 
       } //end 8
 
     } //end if (is_array($_POST['update_totals'])) { //1
-
 
         for ($i=0, $n=sizeof($new_order_totals); $i<$n; $i++) {
           $sql_data_array = array('orders_id' => $oID,
@@ -572,7 +571,7 @@ if ($action == 'update_downloads') {
     $check_status_query = tep_db_query("
                         SELECT customers_name, customers_email_address, orders_status, date_purchased
                         FROM " . TABLE_ORDERS . "
-              WHERE orders_id = '" . $_GET['oID'] . "'");
+              WHERE orders_id = '" . $oID . "'");
 
     $check_status = tep_db_fetch_array($check_status_query);
 
@@ -581,7 +580,7 @@ if ($action == 'update_downloads') {
         tep_db_query("UPDATE " . TABLE_ORDERS . " SET
             orders_status = '" . tep_db_input($_GET['status']) . "',
                       last_modified = now()
-                      WHERE orders_id = '" . $_GET['oID'] . "'");
+                      WHERE orders_id = '" . $oID . "'");
 
      // Notify Customer ?
       $customer_notified = '0';
@@ -592,8 +591,8 @@ if ($action == 'update_downloads') {
         }
         $email = STORE_NAME . "\n" .
                  EMAIL_SEPARATOR . "\n" .
-             EMAIL_TEXT_ORDER_NUMBER . ' ' . $_GET['oID'] . "\n" .
-  EMAIL_TEXT_INVOICE_URL . ' ' . tep_catalog_href_link(FILENAME_CATALOG_ACCOUNT_HISTORY_INFO, 'order_id=' . $_GET['oID'], 'SSL') . "\n" .
+             EMAIL_TEXT_ORDER_NUMBER . ' ' . $oID . "\n" .
+  EMAIL_TEXT_INVOICE_URL . ' ' . tep_catalog_href_link(FILENAME_CATALOG_ACCOUNT_HISTORY_INFO, 'order_id=' . $oID, 'SSL') . "\n" .
              EMAIL_TEXT_DATE_ORDERED . ' ' . tep_date_long($check_status['date_purchased']) . "\n\n" .
              sprintf(EMAIL_TEXT_STATUS_UPDATE, $orders_status_array[$_GET['status']]) . $notify_comments . sprintf(EMAIL_TEXT_STATUS_UPDATE2);
 
@@ -604,7 +603,7 @@ if ($action == 'update_downloads') {
 
       tep_db_query("INSERT into " . TABLE_ORDERS_STATUS_HISTORY . "
       (orders_id, orders_status_id, date_added, customer_notified, comments)
-      values ('" . tep_db_input($_GET['oID']) . "',
+      values ('" . tep_db_input($oID) . "',
         '" . tep_db_input($_GET['status']) . "',
         now(),
         " . tep_db_input($customer_notified) . ",
@@ -628,7 +627,7 @@ if ($action == 'update_downloads') {
 $r = 0;
 $orders_history_query = tep_db_query("SELECT orders_status_history_id, orders_status_id, date_added, customer_notified, comments
                                     FROM " . TABLE_ORDERS_STATUS_HISTORY . "
-                  WHERE orders_id = '" . tep_db_prepare_input($_GET['oID']) . "'
+                  WHERE orders_id = '" . $oID . "'
                   ORDER BY date_added");
 if (tep_db_num_rows($orders_history_query)) {
   while ($orders_history = tep_db_fetch_array($orders_history_query)) {
@@ -675,10 +674,10 @@ if (tep_db_num_rows($orders_history_query)) {
    //12. insert shipping method when one doesn't already exist
      if ($action == 'insert_shipping') {
 
-    $order = new manualOrder($_GET['oID']);
+    $order = new manualOrder($oID);
 
     $Query = "INSERT INTO " . TABLE_ORDERS_TOTAL . " SET
-                  orders_id = '" . $_GET['oID'] . "',
+                  orders_id = '" . $oID . "',
           title = '" . $_GET['title'] . "',
           text = '" . $currencies->format($_GET['value'], true, $order->info['currency'], $order->info['currency_value']) ."',
           value = '" . $_GET['value'] . "',
@@ -686,14 +685,14 @@ if (tep_db_num_rows($orders_history_query)) {
           sort_order = '" . $_GET['sort_order'] . "'";
           tep_db_query($Query);
 
-    tep_db_query("UPDATE " . TABLE_ORDERS . " SET shipping_module = '" . $_GET['id'] . "' WHERE orders_id = '" . $_GET['oID'] . "'");
+    tep_db_query("UPDATE " . TABLE_ORDERS . " SET shipping_module = '" . $_GET['id'] . "' WHERE orders_id = '" . $oID . "'");
 
-      $order = new manualOrder($_GET['oID']);
-        $shippingKey = $order->adjust_totals($_GET['oID']);
+      $order = new manualOrder($oID);
+        $shippingKey = $order->adjust_totals($oID);
         $order->adjust_zones();
 
         $cart = new manualCart();
-        $cart->restore_contents($_GET['oID']);
+        $cart->restore_contents($oID);
         $total_count = $cart->count_contents();
         $total_weight = $cart->show_weight();
 
@@ -711,7 +710,7 @@ if (tep_db_num_rows($orders_history_query)) {
                 <td valign="top" width="100%">
          <br>
            <div>
-          <a href="javascript:openWindow('<?php echo tep_href_link('edit_orders_add_product.php', 'oID=' . $_GET['oID'] . '&step=1'); ?>','addProducts');"><?php echo tep_image_button('button_add_article.gif', TEXT_ADD_NEW_PRODUCT); ?></a><input type="hidden" name="subaction" value="">
+          <a href="javascript:openWindow('<?php echo tep_href_link('edit_orders_add_product.php', 'oID=' . $oID . '&step=1'); ?>','addProducts');"><?php echo tep_image_button('button_add_article.gif', TEXT_ADD_NEW_PRODUCT); ?></a><input type="hidden" name="subaction" value="">
           </div>
           <br>
         </td>
@@ -831,7 +830,7 @@ if (tep_db_num_rows($orders_history_query)) {
 
     if ($action == 'new_order_email')  {
 
-        $order = new manualOrder($_GET['oID']);
+        $order = new manualOrder($oID);
 
         for ($i=0, $n=sizeof($order->products); $i<$n; $i++) {
     //loop all the products in the order
@@ -848,8 +847,8 @@ if (tep_db_num_rows($orders_history_query)) {
        //Build the email
        $email_order = STORE_NAME . "\n" .
                       EMAIL_SEPARATOR . "\n" .
-                      EMAIL_TEXT_ORDER_NUMBER . ' ' . (int)$_GET['oID'] . "\n" .
-                      EMAIL_TEXT_INVOICE_URL . ' ' . tep_catalog_href_link(FILENAME_CATALOG_ACCOUNT_HISTORY_INFO, 'order_id=' . (int)$_GET['oID'], 'SSL') . "\n" .
+                      EMAIL_TEXT_ORDER_NUMBER . ' ' . $oID . "\n" .
+                      EMAIL_TEXT_INVOICE_URL . ' ' . tep_catalog_href_link(FILENAME_CATALOG_ACCOUNT_HISTORY_INFO, 'order_id=' . $oID, 'SSL') . "\n" .
                       EMAIL_TEXT_DATE_MODIFIED . ' ' . strftime(DATE_FORMAT_LONG) . "\n\n";
 
         $email_order .= EMAIL_TEXT_PRODUCTS . "\n" .

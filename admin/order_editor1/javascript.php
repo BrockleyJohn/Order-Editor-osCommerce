@@ -5,9 +5,6 @@
   http://www.oscommerce.com
   Copyright (c) 2007 osCommerce
   Released under the GNU General Public License
-  MODIFICADO ABRIL 2016
-  
-  
 */
 ?>
 <script language="javascript" type="text/javascript"><!--
@@ -15,7 +12,11 @@
 var xmlHttp = false;
 
   function  createRequest() {
+    if(window.ActiveXObject) {
+      xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+    } else if(window.XMLHttpRequest) {
       xmlHttp = new XMLHttpRequest();
+    }
 	  if (!xmlHttp) {
       alert('<?php echo AJAX_CANNOT_CREATE_XMLHTTP; ?>');
     return false;
@@ -67,7 +68,7 @@ var xmlHttp = false;
   function updateProductsField(action, pid, field, value, info) {
     createRequest();
 		if ( (action == 'update') || (action == 'reload1') ) {
-        var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_product_field&oID=<?php echo $_GET['oID']; ?>&pid=" + pid + "&field=" + field + "&new_value=" + value;
+        var url = "edit_orders_ajax.php?action=update_product_field&oID=<?php echo $_GET['oID']; ?>&pid=" + pid + "&field=" + field + "&new_value=" + value;
         xmlHttp.open("GET", url, true);
 		    if (action == 'reload1') {
 		        xmlHttp.onreadystatechange=
@@ -81,7 +82,7 @@ var xmlHttp = false;
 		if (action == 'reload2') {
       var price = document.getElementById("update_products[" + pid + "][price]").value;
       var final_price = document.getElementById("update_products[" + pid + "][final_price]").value;
-      var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_product_value_field&oID=<?php echo $_GET['oID']; ?>&pid=" + pid + "&price=" + price + "&final_price=" + final_price;
+      var url = "edit_orders_ajax.php?action=update_product_value_field&oID=<?php echo $_GET['oID']; ?>&pid=" + pid + "&price=" + price + "&final_price=" + final_price;
       xmlHttp.open("GET", url, true);
       xmlHttp.onreadystatechange=
         function(){if(xmlHttp.readyState!=4)return;if(xmlHttp.status==200){rewriteDiv(xmlHttp.responseText, 'products');obtainTotals();}};
@@ -89,7 +90,7 @@ var xmlHttp = false;
 
 		if ( (action == 'delete') && (field == 'delete') && (value == true) ){
 		  if (confirm('<?php echo AJAX_CONFIRM_PRODUCT_DELETE; ?>')) {
-        var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=delete_product_field&oID=<?php echo $_GET['oID']; ?>&pid=" + pid + "&field=" + field + "&new_value=" + value;
+        var url = "edit_orders_ajax.php?action=delete_product_field&oID=<?php echo $_GET['oID']; ?>&pid=" + pid + "&field=" + field + "&new_value=" + value;
         xmlHttp.open("GET", url, true);
         xmlHttp.onreadystatechange=
           function(){if(xmlHttp.readyState!=4)return;if(xmlHttp.status==200){rewriteDiv(xmlHttp.responseText, 'products');deleteRow(info, 'productsTable');obtainTotals();}};
@@ -101,11 +102,11 @@ var xmlHttp = false;
   function updateAttributesField (action, field, aid, pid, value) {
 	 createRequest();
 		if (action == 'simple') {
-		var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_attributes_field&oID=<?php echo $_GET['oID']; ?>&aid=" + aid +"&pid=" + pid + "&field=" + field + "&new_value=" + value;
+		var url = "edit_orders_ajax.php?action=update_attributes_field&oID=<?php echo $_GET['oID']; ?>&aid=" + aid +"&pid=" + pid + "&field=" + field + "&new_value=" + value;
 		}
         if (action == 'hard') {
 	    var final_price = document.getElementById("update_products[" + pid + "][final_price]").value;
-		var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_attributes_field&oID=<?php echo $_GET['oID']; ?>&aid=" + aid +"&pid=" + pid + "&field=" + field + "&new_value=" + value + "&final_price=" + final_price;
+		var url = "edit_orders_ajax.php?action=update_attributes_field&oID=<?php echo $_GET['oID']; ?>&aid=" + aid +"&pid=" + pid + "&field=" + field + "&new_value=" + value + "&final_price=" + final_price;
 		}
 		xmlHttp.open("GET", url, true);
 		  if (action == 'simple') {
@@ -121,7 +122,7 @@ var xmlHttp = false;
     }//end function updateAttributesField
 	function updateDownloads (field, did, pid, value) {
 	  createRequest();
-	    var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_downloads&oID=<?php echo $_GET['oID']; ?>&pid=" + pid + "&field=" + field + "&new_value=" + value + "&did=" + did;
+	    var url = "edit_orders_ajax.php?action=update_downloads&oID=<?php echo $_GET['oID']; ?>&pid=" + pid + "&field=" + field + "&new_value=" + value + "&did=" + did;
 		xmlHttp.open("GET", url, true);
 		xmlHttp.onreadystatechange=
 		        function(){if(xmlHttp.readyState!=4)return;if(xmlHttp.status==200){rewriteDiv(xmlHttp.responseText, 'products');}};
@@ -131,7 +132,7 @@ function updateCommentsField(action, id, status, value, info) {
       if ( (status) && (status == true) && (action == 'delete') ) {
 	     if (confirm('<?php echo AJAX_CONFIRM_COMMENT_DELETE; ?>')) {
 			createRequest();
-		    var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=delete_comment&cID=" + id + "&oID=<?php echo $_GET['oID']; ?>";
+		    var url = "edit_orders_ajax.php?action=delete_comment&cID=" + id + "&oID=<?php echo $_GET['oID']; ?>";
 		    xmlHttp.open("GET", url, true);
 			xmlHttp.onreadystatechange=
 		            function(){if(xmlHttp.readyState!=4)return;if(xmlHttp.status==200){rewriteDiv(xmlHttp.responseText, 'history');deleteRow(info, 'commentsTable')}};
@@ -141,7 +142,7 @@ function updateCommentsField(action, id, status, value, info) {
 	  }
 	 if (action == 'update') {
 	  		createRequest();
-		    var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_comment&cID=" + id + "&comment=" + value + "&oID=<?php echo $_GET['oID']; ?>";
+		    var url = "edit_orders_ajax.php?action=update_comment&cID=" + id + "&comment=" + value + "&oID=<?php echo $_GET['oID']; ?>";
 		    xmlHttp.open("GET", url, true);
 			xmlHttp.onreadystatechange=
 		            function(){if(xmlHttp.readyState!=4)return;if(xmlHttp.status==200){rewriteDiv(xmlHttp.responseText, 'history');}};
@@ -162,14 +163,14 @@ function updateCommentsField(action, id, status, value, info) {
     document.getElementById("ot_shipping[value]").value = document.getElementById("update_shipping["+method+"][value]").value;
 	document.getElementById("ot_shipping[id]").value = document.getElementById("update_shipping["+method+"][id]").value;
 	obtainTotals();
-	}  else {
-		  	if (confirm('<?php echo AJAX_SELECTED_NO_SHIPPING; ?>')) {
+	} else {
+			if (confirm('<?php echo AJAX_SELECTED_NO_SHIPPING; ?>')) {
 			createRequest();
 			var title = document.getElementById("update_shipping["+method+"][title]").value;
 			var value = document.getElementById("update_shipping["+method+"][value]").value;
 			var id = document.getElementById("update_shipping["+method+"][id]").value;
 			var sort_order = "<?php echo MODULE_ORDER_TOTAL_SHIPPING_SORT_ORDER ?>";
-		    var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=insert_shipping&title=" + title + "&id=" + id + "&value=" + value + "&sort_order=" + sort_order + "&oID=<?php echo $_GET['oID']; ?>";
+		    var url = "edit_orders_ajax.php?action=insert_shipping&title=" + title + "&id=" + id + "&value=" + value + "&sort_order=" + sort_order + "&oID=<?php echo $_GET['oID']; ?>";
 		    xmlHttp.open("GET", url, true);
 			xmlHttp.onreadystatechange=
                     function(){if(xmlHttp.readyState!=4)return;if(xmlHttp.status==200){reloadDiv('totalsBlock', xmlHttp.responseText);}};
@@ -202,12 +203,14 @@ function updateCommentsField(action, id, status, value, info) {
           echo "\n";
         }
 ?>
+
 		createRequest();
-	    var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_currency&oID=<?php echo $_GET['oID']; ?>&table=<?php echo TABLE_ORDERS; ?>&currency=" + currency + "&currency_value=" + currency_value;
-      xmlHttp.open("GET", url, true);
+	    var url = "edit_orders_ajax.php?action=update_currency&oID=<?php echo $_GET['oID']; ?>&table=<?php echo TABLE_ORDERS; ?>&currency=" + currency + "&currency_value=" + currency_value;
+		xmlHttp.open("GET", url, true);
 	    xmlHttp.onreadystatechange=
 		        function(){if(xmlHttp.readyState!=4)return;if(xmlHttp.status==200){rewriteDiv(xmlHttp.responseText, 'orders');obtainTotals();}};
 	    xmlHttp.send(null);
+
         }
 
   function clearComments() {
@@ -222,7 +225,7 @@ function updateCommentsField(action, id, status, value, info) {
 	   var notify = document.getElementById("notify").checked;
 	   var notifyComments = document.getElementById("notify_comments").checked;
 	   var comments = encodeURIComponent(document.getElementById("comments").value);
-	   var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=insert_new_comment&oID=<?php echo $_GET['oID']; ?>&status=" + status +"&notify=" + notify + "&notify_comments=" + notifyComments + "&comments=" + comments;
+	   var url = "edit_orders_ajax.php?action=insert_new_comment&oID=<?php echo $_GET['oID']; ?>&status=" + status +"&notify=" + notify + "&notify_comments=" + notifyComments + "&comments=" + comments;
 		xmlHttp.open("GET", url, true);
 	    xmlHttp.onreadystatechange=
                 function(){if(xmlHttp.readyState!=4)return;if(xmlHttp.status==200){reloadDiv('commentsBlock', xmlHttp.responseText);clearComments();}};
@@ -239,7 +242,7 @@ function updateCommentsField(action, id, status, value, info) {
      }
 		  formdata += "action=reload_totals&";
 		  formdata += "oID=<?php echo $_GET['oID']; ?>"
-	 var url = "<?php echo 'edit_orders_ajax.php'; ?>";
+	 var url = "edit_orders_ajax.php";
 	  //hey- we're busy here
 	  document.getElementById("totalsBlock").innerHTML = '<div align="center"><img src="order_editor/images/working.gif"><br><?php echo AJAX_WORKING; ?><br></div>';
 	  //if you do this before you loop the form the data will be lost
@@ -252,6 +255,26 @@ function updateCommentsField(action, id, status, value, info) {
       xmlHttp.send(formdata);
 
    }//end function obtainTotals() {
+
+   function newOrderEmail() { //sending out new order confirmation emails the AJAX way
+     if (confirm('<?php echo AJAX_NEW_ORDER_EMAIL; ?>')) {
+	    //var comments = prompt('<?php echo AJAX_INPUT_NEW_EMAIL_COMMENTS; ?>');
+		//at this point it seems unneccessary to include admin comments with new order confirmation emails
+		//the comments included with an original order email are written in by the customer, not admin
+		//also, the prompt function within IE7 is disabled by default and works like something from 1997
+	    createRequest();
+	    //if (comments) {
+		//var url = "edit_orders_ajax.php?action=new_order_email&comments=" + encodeURIComponent(comments) + "&oID=<?php echo $_GET['oID']; ?>";
+		//} else {
+		var url = "edit_orders_ajax.php?action=new_order_email&oID=<?php echo $_GET['oID']; ?>";
+		//}
+		xmlHttp.open("GET", url, true);
+		xmlHttp.onreadystatechange=
+		       function(){if(xmlHttp.readyState!=4)return;if(xmlHttp.status==200){reloadDiv('ordersMessageStack', xmlHttp.responseText)}};
+	    xmlHttp.send(null);
+     }
+   }//end function newOrderEmail()
+///end AJAX section
 
 ///begin standard JavaScript for edit_orders.php file
    function setAddressVisibility(szDivID, checkID) {
@@ -381,8 +404,7 @@ function updateCommentsField(action, id, status, value, info) {
   }
 } // end function addLoadListener(fn)
 
-
-
+<?php echo "ORDER_EDITOR_PAYMENT_DROPDOWN = '" . ORDER_EDITOR_PAYMENT_DROPDOWN . "';"; ?>
 
 addLoadListener(init);
 function init()
@@ -392,19 +414,22 @@ function init()
   optional.className = "hidden";
   }
   //START dropdown option for payment method by quick_fixer
-
-    var selObj = document.getElementById('update_info_payment_method');
-    if (selObj) { var selIndex = selObj.selectedIndex; }
-    //text in place of of value supported by firefox and mozilla but not others 
-    // SO MAKE SURE text and optional value are the same (in the payment dropdown they are)
-    if (selObj.options[selIndex].text) {
-        var paymentMethod = selObj.options[selIndex].text;
-    }
-    else {
-        var paymentMethod = selObj.options[selIndex].value;
-    }
-
-
+      if (ORDER_EDITOR_PAYMENT_DROPDOWN == 'true') {
+            var selObj = document.getElementById('update_info_payment_method');
+            if (selObj) { var selIndex = selObj.selectedIndex; }
+        //text in lieu of value supported by firefox and mozilla but not others SO MAKE SURE text and optional value are the same (in the payment dropdown they are)
+            if (selObj.options[selIndex].text) {
+                var paymentMethod = selObj.options[selIndex].text;
+            }
+            else {
+                var paymentMethod = selObj.options[selIndex].value;
+            }
+        }
+        else {
+            //if you only use an input field to display payment method use this
+            var selObj = document.getElementById('update_info_payment_method');
+            if (selObj) { var paymentMethod = selObj.value; }
+        }
     //END dropdown option for payment method by quick_fixer
   if (optional) {
   if (paymentMethod == "<?php echo ORDER_EDITOR_CREDIT_CARD ?>") {

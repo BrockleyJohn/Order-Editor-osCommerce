@@ -33,7 +33,7 @@
   include('order_editor/order.php');
   include('order_editor/shipping.php');
 //  include('order_editor/http_client.php');
-  include(DIR_WS_LANGUAGES . $language. '/' . basename($PHP_SELF));
+  include(DIR_WS_LANGUAGES . $language. '/' . 'edit_orders.php');
 
   // Include currencies class
   require(DIR_WS_CLASSES . 'currencies.php');
@@ -883,7 +883,7 @@
                 <td colspan="2" class="main">
            <?php
             //START for payment dropdown menu use this by quick_fixer
-              if (ORDER_EDITOR_PAYMENT_DROPDOWN == 'true') {
+//              if (ORDER_EDITOR_PAYMENT_DROPDOWN == 'true') {
 
             // Get list of all payment modules available
             $enabled_payment = array();
@@ -910,13 +910,16 @@
           include($module_directory . $file);
 
           $class = substr($file, 0, strrpos($file, '.'));
+
           if (tep_class_exists($class)) {
              $module = new $class;
+
              if ($module->check() > 0) {
               // If module enabled create array of titles
                $enabled_payment[] = array('id' => $module->title, 'text' => $module->title);
 
               //if the payment method is the same as the payment module title then don't add it to dropdown menu
+
               if ($module->title == $order->info['payment_method']) {
                   $paymentMatchExists='true';
                  }
@@ -931,9 +934,15 @@
             //draw the dropdown menu for payment methods and default to the order value
               echo tep_draw_pull_down_menu('update_info_payment_method', $enabled_payment, $order->info['payment_method'], 'id="update_info_payment_method" style="width: 150px;" onChange="init(); updateOrdersField(\'payment_method\', this.options[this.selectedIndex].text)"');
 
-            }  else { //draw the input field for payment methods and default to the order value  ?>
+
+
+/*
+            } 
+            else { //draw the input field for payment methods and default to the order value  ?>
            <input name="update_info_payment_method" size="35" value="<?php echo $order->info['payment_method']; ?>" id="update_info_payment_method" onChange="init(); updateOrdersField('payment_method', encodeURIComponent(this.value));">
            <?php } //END for payment dropdown menu use this by quick_fixer ?>
+*/
+?>
                 </td>
                 <td width="20">
                 </td>
@@ -1125,8 +1134,8 @@
                 <td align="right" rowspan="2" valign="top" nowrap class="dataTableRow" style="border: 1px solid #C9C9C9;">
                   <table border="0" cellspacing="0" cellpadding="2">
                     <tr class="dataTableHeadingRow">
-                      <td class="dataTableHeadingContent" width="15" nowrap title="<?php echo HINT_TOTALS;?>"><img src="images/icon_info.gif" border="0" width="13" height="13"></td>
-                      <td class="dataTableHeadingContent" nowrap><?php echo TABLE_HEADING_OT_TOTALS; ?></td>
+                      <td class="dataTableHeadingContent" width="15" colspan="2" nowrap title="<?php echo HINT_TOTALS;?>"><img src="images/icon_info.gif" border="0" width="13" height="13">
+                      <?php echo TABLE_HEADING_OT_TOTALS; ?></td>
                       <td class="dataTableHeadingContent" colspan="2" nowrap><?php echo TABLE_HEADING_OT_VALUES; ?></td>
                     </tr>
 <?php
@@ -1150,15 +1159,24 @@
       echo '                    <tr class="' . $rowStyle . '">' . "\n";
       if ($order->totals[$i]['class'] != 'ot_total') {
 
-          if ($order->totals[$i]['class'] == 'ot_subtotal') {
-      $subtotalpedido = $order->totals[$i]['value'] ;
-      }
-        echo '                      <td class="dataTableContent" valign="middle" height="15">
+        if ($order->totals[$i]['class'] == 'ot_subtotal') {
+            $subtotalpedido = $order->totals[$i]['value'] ;
+        }
+/*        echo '                      <td class="dataTableContent" valign="middle" height="15">
         <script language="JavaScript" type="text/javascript">
         <!--
         document.write("<span id=\"update_totals['.$i.']\"><a href=\"javascript:setCustomOTVisibility(\'update_totals['.($i+1).']\', \'visible\', \'update_totals['.$i.']\');\"><img src=\"order_editor/images/plus.gif\" border=\"0\" alt=\"' . IMAGE_ADD_NEW_OT . '\" title=\"' . IMAGE_ADD_NEW_OT . '\"></a></span>");
         //-->
         </script></td>' . "\n";
+*/
+?>
+        <td class="dataTableContent" valign="middle" height="15">
+          <span id="update_totals[<?php echo $i;?>]">
+            <a href='javascript:setCustomOTVisibility("update_totals[<?php echo ($i+1);?>]","visible", "update_totals[<?php echo $i;?>]")'>
+              <img src="order_editor/images/plus.gif" border="0" alt="<?php echo IMAGE_ADD_NEW_OT;?>" title="<?php echo IMAGE_ADD_NEW_OT;?>">
+            </a>
+          </span>
+<?php
       } else {
         echo '                      <td class="dataTableContent" valign="middle">&nbsp;</td>' . "\n";
       }
@@ -1170,12 +1188,25 @@
            '                    </tr>' . "\n";
     } else {
       if ($i % 2) {
-        echo '                          <script language="JavaScript" type="text/javascript">
+/*        echo '                          <script language="JavaScript" type="text/javascript">
         <!--
         document.write("<tr class=\"' . $rowStyle . '\" id=\"update_totals['.$i.']\" style=\"visibility: hidden; display: none;\"><td class=\"dataTableContent\" valign=\"middle\" height=\"15\"><a href=\"javascript:setCustomOTVisibility(\'update_totals['.($i).']\', \'hidden\', \'update_totals['.($i-1).']\');\"><img src=\"order_editor/images/minus.gif\" border=\"0\" alt=\"' . IMAGE_REMOVE_NEW_OT . '\" title=\"' . IMAGE_REMOVE_NEW_OT . '\"></a></td>");
              //-->
         </script>' . "\n";
+*/
+?>
+                          <tr class="<?php echo $rowStyle;?>" id="update_totals[<?php echo $i;?>]" style="visibility: hidden; display: none;">
+                            <td class="dataTableContent" valign="middle" height="15">
+                              <a href='javascript:setCustomOTVisibility("update_totals[<?php echo $i;?>]", "hidden", "update_totals[<?php echo ($i-1);?>]")'>
+                                <img src="order_editor/images/minus.gif" border="0" alt="<?php echo IMAGE_REMOVE_NEW_OT;?>" title="<?php echo IMAGE_REMOVE_NEW_OT ;?>">
+                              </a>
+                            </td>
+
+<?php
+
+
       } else {
+/*
         echo '                  <tr class="' . $rowStyle . '">' . "\n" .
              '                    <td class="dataTableContent" valign="middle" height="15">
         <script language="JavaScript" type="text/javascript">
@@ -1183,6 +1214,18 @@
         document.write("<span id=\"update_totals['.$i.']\"><a href=\"javascript:setCustomOTVisibility(\'update_totals['.($i+1).']\', \'visible\', \'update_totals['.$i.']\');\"><img src=\"order_editor/images/plus.gif\" border=\"0\" alt=\"' . IMAGE_ADD_NEW_OT . '\" title=\"' . IMAGE_ADD_NEW_OT . '\"></a></span>");
         //-->
         </script></td>' . "\n";
+*/
+?>
+                  <tr class="<?php echo $rowStyle;?>">
+                    <td class="dataTableContent" valign="middle" height="15">
+        <span id="update_totals[<?php echo $i;?>]">
+          <a href="javascript:setCustomOTVisibility('update_totals[<?php echo ($i+1);?>]', 'visible', 'update_totals[<?php echo $i;?>]');">
+            <img src="order_editor/images/plus.gif" border="0" alt="<?php echo IMAGE_ADD_NEW_OT;?>" title="<?php echo IMAGE_ADD_NEW_OT;?>">
+          </a>
+        </span>
+        </td>
+
+<?php
       }
 
       echo '                    <td align="right" class="dataTableContent"><input name="update_totals['.$i.'][title]" id="'.$id.'[title]" value="' . trim($order->totals[$i]['title']) . '" onChange="obtainTotals()"></td>' . "\n" .
@@ -1214,7 +1257,12 @@
         $r++;
         if (!isset($shipping_quotes[$i]['tax'])) $shipping_quotes[$i]['tax'] = 0;
         $rowClass = ((($r/2) == (floor($r/2))) ? 'dataTableRowOver' : 'dataTableRow');
+        
+/*
         echo '                  <tr class="' . $rowClass . '" onmouseover="rowOverEffect(this)" onmouseout="rowOutEffect(this, \'' . $rowClass . '\')" onClick="selectRowEffect(this, ' . $r . '); setShipping(' . $r . ');">' . "\n";
+        
+        
+        
         echo '                    <td class="dataTableContent" valign="top" align="left" width="15px">' . "\n" .
 '                      <script language="JavaScript" type="text/javascript">
                       <!--
@@ -1223,10 +1271,27 @@
                       </script>
                       <input type="hidden" id="update_shipping[' . $r . '][title]" name="update_shipping[' . $r . '][title]" value="'.$shipping_quotes[$i]['module'] . ' (' . $shipping_quotes[$i]['methods'][$j]['title'].'):">' . "\n" .
              '                      <input type="hidden" id="update_shipping[' . $r . '][value]" name="update_shipping[' . $r . '][value]" value="'.tep_add_tax($shipping_quotes[$i]['methods'][$j]['cost'], $shipping_quotes[$i]['tax']).'">' . "\n" .
-             '                      <input type="hidden" id="update_shipping[' . $r . '][id]" name="update_shipping[' . $r . '][id]" value="' . $shipping_quotes[$i]['id'] . '_' . $shipping_quotes[$i]['methods'][$j]['id'] . '">' . "\n" .
-             '                    <td class="dataTableContent" valign="top">' . $shipping_quotes[$i]['module'] . ' (' . $shipping_quotes[$i]['methods'][$j]['title'] . '):</td>' . "\n" .
-             '                    <td class="dataTableContent" align="right">' . $currencies->format(tep_add_tax($shipping_quotes[$i]['methods'][$j]['cost'], $shipping_quotes[$i]['tax']), true, $order->info['currency'], $order->info['currency_value']) . '</td>' . "\n" .
+*             '                      <input type="hidden" id="update_shipping[' . $r . '][id]" name="update_shipping[' . $r . '][id]" value="' . $shipping_quotes[$i]['id'] . '_' . $shipping_quotes[$i]['methods'][$j]['id'] . '">' . "\n" .
+**             '                    <td class="dataTableContent" valign="top">' . $shipping_quotes[$i]['module'] . ' (' . $shipping_quotes[$i]['methods'][$j]['title'] . '):</td>' . "\n" .
+//             '                    <td class="dataTableContent" align="right">' . $currencies->format(tep_add_tax($shipping_quotes[$i]['methods'][$j]['cost'], $shipping_quotes[$i]['tax']), true, $order->info['currency'], $order->info['currency_value']) . '</td>' . "\n" .
              '                  </tr>' . "\n";
+        
+        
+        
+*/
+?>
+                  <tr class="<?php echo $rowClass;?>" onmouseover="rowOverEffect(this)" onmouseout="rowOutEffect(this, '<?php echo $rowClass;?>')" onClick="selectRowEffect(this, <?php echo $r;?>); setShipping(<?php echo $r;?>);">
+                    <td class="dataTableContent" valign="top" align="left" width="15px">
+                      <input type="radio" name="shipping" id="shipping_radio_<?php echo $r;?>" value="<?php echo $shipping_quotes[$i]['id'];?>_<?php echo $shipping_quotes[$i]['methods'][$j]['id'];?>">
+                      <input type="hidden" id="update_shipping[<?php echo $r;?>][title]" name="update_shipping[<?php echo $r?>][title]" value="<?php echo $shipping_quotes[$i]['module'];?> (<?php echo $shipping_quotes[$i]['methods'][$j]['title'];?>):">
+                      <input type="hidden" id="update_shipping[<?php echo $r;?>][value]" name="update_shipping[<?php echo $r;?>][value]" value="<?php echo tep_add_tax($shipping_quotes[$i]['methods'][$j]['cost'], $shipping_quotes[$i]['tax']);?>">
+
+                      <input type="hidden" id="update_shipping[<?php echo $r;?>][id]" name="update_shipping[<?php echo $r;?>][id]" value="<?php echo  $shipping_quotes[$i]['id'] . '_' . $shipping_quotes[$i]['methods'][$j]['id'];?>">
+            </td>
+                    <td class="dataTableContent" valign="top"><?php echo $shipping_quotes[$i]['module'];?> (<?php echo $shipping_quotes[$i]['methods'][$j]['title'];?>):</td>
+                    <td class="dataTableContent" align="right"><?php echo $currencies->format(tep_add_tax($shipping_quotes[$i]['methods'][$j]['cost'], $shipping_quotes[$i]['tax']), true, $order->info['currency'], $order->info['currency_value']);?></td>
+                  </tr>
+<?php
       }
     }
 ?>
