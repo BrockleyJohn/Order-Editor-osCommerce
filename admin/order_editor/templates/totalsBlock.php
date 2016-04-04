@@ -5,8 +5,13 @@
                 <td valign="top" width="100%">
                   <br>
                   <div>
+<?php /*
                     <a href="<?php echo tep_href_link('edit_orders_add_product.php', 'oID=' . $oID . '&step=1'); ?>" target="addProducts" onClick="openWindow('<?php echo tep_href_link('edit_orders_add_product.php', 'oID=' . $oID . '&step=1'); ?>','addProducts');return false"><?php echo tep_image_button('button_add_article.gif', TEXT_ADD_NEW_PRODUCT);
-                      ?></a><input type="hidden" name="subaction" value="">
+                      ?></a>
+*/
+?>
+                    <?php echo tep_draw_button(TEXT_ADD_NEW_PRODUCT,'document',"javascript:openWindow('".tep_href_link('edit_orders_add_product.php', 'oID=' . $oID . '&step=1')."','addProducts');",'secondary'); ?><input type="hidden" name="subaction" value="">
+                      <input type="hidden" name="subaction" value="">
                   </div>
                   <br>
                 </td>
