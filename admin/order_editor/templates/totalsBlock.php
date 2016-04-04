@@ -10,7 +10,7 @@
                       ?></a>
 */
 ?>
-                    <?php echo tep_draw_button(TEXT_ADD_NEW_PRODUCT,'document',"javascript:openWindow('".tep_href_link('edit_orders_add_product.php', 'oID=' . $oID . '&step=1')."','addProducts');",'secondary'); ?><input type="hidden" name="subaction" value="">
+                    <?php echo tep_draw_button(TEXT_ADD_NEW_PRODUCT,'circle-plus',"javascript:openWindow('".tep_href_link('edit_orders_add_product.php', 'oID=' . $oID . '&step=1')."','addProducts');",'secondary'); ?><input type="hidden" name="subaction" value="">
                       <input type="hidden" name="subaction" value="">
                   </div>
                   <br>
@@ -49,7 +49,7 @@
         <td class="dataTableContent" valign="middle" height="15">
           <span id="update_totals[<?php echo $i;?>]">
             <a href='javascript:setCustomOTVisibility("update_totals[<?php echo ($i+1);?>]","visible", "update_totals[<?php echo $i;?>]")'>
-              <img src="order_editor/images/plus.gif" border="0" alt="<?php echo IMAGE_ADD_NEW_OT;?>" title="<?php echo IMAGE_ADD_NEW_OT;?>">
+              <span title="<?php echo IMAGE_ADD_NEW_OT;?>" id="icon-add" class="ui-icon ui-icon-circle-plus"></span>
             </a>
           </span>
 <?php
