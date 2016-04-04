@@ -60,7 +60,7 @@ define('ENTRY_STATUS', 'Status:');
 define('ENTRY_NOTIFY_CUSTOMER', 'Notify Customer:');
 define('ENTRY_NOTIFY_COMMENTS', 'Send Comments:');
 define('ENTRY_CURRENCY_TYPE', 'Currency');
-define('ENTRY_CURRENCY_VALUE', 'Currency Value');
+define('ENTRY_CURRENCY_VALUE', 'Value');
 
 define('TEXT_INFO_PAYMENT_METHOD', 'Payment Method:');
 define('TEXT_NO_ORDER_PRODUCTS', 'This order contains no products');

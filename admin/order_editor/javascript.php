@@ -64,10 +64,10 @@ var xmlHttp = false;
 		xmlHttp.send(null);
   } //end function updatOrdersField
 
-  function updateProductsField(action, pid, field, value, info) {
+  function updateProductsField(action, pID, field, value, info) {
     createRequest();
 		if ( (action == 'update') || (action == 'reload1') ) {
-        var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_product_field&oID=<?php echo $_GET['oID']; ?>&pid=" + pid + "&field=" + field + "&new_value=" + value;
+        var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_product_field&oID=<?php echo $_GET['oID']; ?>&pID=" + pID + "&field=" + field + "&new_value=" + value;
         xmlHttp.open("GET", url, true);
 		    if (action == 'reload1') {
 		        xmlHttp.onreadystatechange=
@@ -79,9 +79,9 @@ var xmlHttp = false;
 		}//end if ( (action == 'update') || (action == 'reload1') ) {
 
 		if (action == 'reload2') {
-      var price = document.getElementById("update_products[" + pid + "][price]").value;
-      var final_price = document.getElementById("update_products[" + pid + "][final_price]").value;
-      var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_product_value_field&oID=<?php echo $_GET['oID']; ?>&pid=" + pid + "&price=" + price + "&final_price=" + final_price;
+      var price = document.getElementById("update_products[" + pID + "][price]").value;
+      var final_price = document.getElementById("update_products[" + pID + "][final_price]").value;
+      var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_product_value_field&oID=<?php echo $_GET['oID']; ?>&pID=" + pID + "&price=" + price + "&final_price=" + final_price;
       xmlHttp.open("GET", url, true);
       xmlHttp.onreadystatechange=
         function(){if(xmlHttp.readyState!=4)return;if(xmlHttp.status==200){rewriteDiv(xmlHttp.responseText, 'products');obtainTotals();}};
@@ -89,23 +89,23 @@ var xmlHttp = false;
 
 		if ( (action == 'delete') && (field == 'delete') && (value == true) ){
 		  if (confirm('<?php echo AJAX_CONFIRM_PRODUCT_DELETE; ?>')) {
-        var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=delete_product_field&oID=<?php echo $_GET['oID']; ?>&pid=" + pid + "&field=" + field + "&new_value=" + value;
+        var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=delete_product_field&oID=<?php echo $_GET['oID']; ?>&pID=" + pID + "&field=" + field + "&new_value=" + value;
         xmlHttp.open("GET", url, true);
         xmlHttp.onreadystatechange=
           function(){if(xmlHttp.readyState!=4)return;if(xmlHttp.status==200){rewriteDiv(xmlHttp.responseText, 'products');deleteRow(info, 'productsTable');obtainTotals();}};
 		   }
     }//end if (action == 'delete') {
     xmlHttp.send(null);
-  } //end function updateProductsField(action, pid, field, value) {
+  } //end function updateProductsField(action, pID, field, value) {
     
-  function updateAttributesField (action, field, aid, pid, value) {
+  function updateAttributesField (action, field, aid, pID, value) {
 	 createRequest();
 		if (action == 'simple') {
-		var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_attributes_field&oID=<?php echo $_GET['oID']; ?>&aid=" + aid +"&pid=" + pid + "&field=" + field + "&new_value=" + value;
+		var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_attributes_field&oID=<?php echo $_GET['oID']; ?>&aid=" + aid +"&pID=" + pID + "&field=" + field + "&new_value=" + value;
 		}
         if (action == 'hard') {
-	    var final_price = document.getElementById("update_products[" + pid + "][final_price]").value;
-		var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_attributes_field&oID=<?php echo $_GET['oID']; ?>&aid=" + aid +"&pid=" + pid + "&field=" + field + "&new_value=" + value + "&final_price=" + final_price;
+	    var final_price = document.getElementById("update_products[" + pID + "][final_price]").value;
+		var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_attributes_field&oID=<?php echo $_GET['oID']; ?>&aid=" + aid +"&pID=" + pID + "&field=" + field + "&new_value=" + value + "&final_price=" + final_price;
 		}
 		xmlHttp.open("GET", url, true);
 		  if (action == 'simple') {
@@ -119,14 +119,14 @@ var xmlHttp = false;
 		  }//end if (action == 'hard') {
 	   xmlHttp.send(null);
     }//end function updateAttributesField
-	function updateDownloads (field, did, pid, value) {
+	function updateDownloads (field, did, pID, value) {
 	  createRequest();
-	    var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_downloads&oID=<?php echo $_GET['oID']; ?>&pid=" + pid + "&field=" + field + "&new_value=" + value + "&did=" + did;
+	    var url = "<?php echo 'edit_orders_ajax.php'; ?>?action=update_downloads&oID=<?php echo $_GET['oID']; ?>&pID=" + pID + "&field=" + field + "&new_value=" + value + "&did=" + did;
 		xmlHttp.open("GET", url, true);
 		xmlHttp.onreadystatechange=
 		        function(){if(xmlHttp.readyState!=4)return;if(xmlHttp.status==200){rewriteDiv(xmlHttp.responseText, 'products');}};
 		xmlHttp.send(null);
-	} //end function updateDownloads (field, did, pid) {
+	} //end function updateDownloads (field, did, pID) {
 function updateCommentsField(action, id, status, value, info) {
       if ( (status) && (status == true) && (action == 'delete') ) {
 	     if (confirm('<?php echo AJAX_CONFIRM_COMMENT_DELETE; ?>')) {
@@ -416,16 +416,16 @@ function init()
   }
   }
 } // end function init()
-  function updatePrices(action, pid, taxdescription) {
+  function updatePrices(action, pID, taxdescription) {
   //calculates all the different values as new entries are typed
-    var qty = document.getElementById("update_products[" + pid + "][qty]").value;
-	var taxRate = document.getElementById("update_products[" + pid + "][tax]").value;
-	var attValue = getAttributesPrices(pid);
+    var qty = document.getElementById("update_products[" + pID + "][qty]").value;
+	var taxRate = document.getElementById("update_products[" + pID + "][tax]").value;
+	var attValue = getAttributesPrices(pID);
 	if ((action == 'qty') || (action == 'tax') || (action == 'att_price') || (action == 'price')) {
-	var finalPriceValue = document.getElementById("update_products[" + pid + "][price]").value;
-	var priceInclValue = document.getElementById("update_products[" + pid + "][price]").value;
-	var totalInclValue = document.getElementById("update_products[" + pid + "][price]").value;
-	var totalExclValue = document.getElementById("update_products[" + pid + "][price]").value;
+	var finalPriceValue = document.getElementById("update_products[" + pID + "][price]").value;
+	var priceInclValue = document.getElementById("update_products[" + pID + "][price]").value;
+	var totalInclValue = document.getElementById("update_products[" + pID + "][price]").value;
+	var totalExclValue = document.getElementById("update_products[" + pID + "][price]").value;
 	finalPriceValue = Number(attValue) + Number(finalPriceValue);
 	priceInclValue = ( Number(attValue) + Number(priceInclValue) ) * ((taxRate / 100) + 1);
 	totalInclValue = ( Number(attValue) + Number(totalInclValue) ) * ((taxRate / 100) + 1) * qty;
@@ -433,40 +433,40 @@ function init()
 	taxValue = taxRate * finalPriceValue / 100 * qty;
 	}
 	if (action == 'final_price') {
-	var priceValue = document.getElementById("update_products[" + pid + "][final_price]").value;
-	var priceInclValue = document.getElementById("update_products[" + pid + "][final_price]").value;
-	var totalInclValue = document.getElementById("update_products[" + pid + "][final_price]").value;
-	var totalExclValue = document.getElementById("update_products[" + pid + "][final_price]").value;
+	var priceValue = document.getElementById("update_products[" + pID + "][final_price]").value;
+	var priceInclValue = document.getElementById("update_products[" + pID + "][final_price]").value;
+	var totalInclValue = document.getElementById("update_products[" + pID + "][final_price]").value;
+	var totalExclValue = document.getElementById("update_products[" + pID + "][final_price]").value;
 	priceValue = Number(priceValue) - Number(attValue);
 	priceInclValue = priceInclValue * ((taxRate / 100) + 1);
 	totalInclValue = totalInclValue * ((taxRate / 100) + 1) * qty;
 	totalExclValue = totalExclValue * qty;
 	} //end if ((action == 'qty') || (action == 'tax') || (action == 'final_price'))
 	if (action == 'price_incl') {
-	var priceValue = document.getElementById("update_products[" + pid + "][price_incl]").value;
-	var finalPriceValue = document.getElementById("update_products[" + pid + "][price_incl]").value;
-	var totalInclValue = document.getElementById("update_products[" + pid + "][price_incl]").value;
-	var totalExclValue = document.getElementById("update_products[" + pid + "][price_incl]").value;
+	var priceValue = document.getElementById("update_products[" + pID + "][price_incl]").value;
+	var finalPriceValue = document.getElementById("update_products[" + pID + "][price_incl]").value;
+	var totalInclValue = document.getElementById("update_products[" + pID + "][price_incl]").value;
+	var totalExclValue = document.getElementById("update_products[" + pID + "][price_incl]").value;
 	priceValue = Number(finalPriceValue / ((taxRate / 100) + 1)) - Number(attValue);
 	finalPriceValue = finalPriceValue / ((taxRate / 100) + 1);
 	totalInclValue = totalInclValue * qty;
 	totalExclValue = totalExclValue * qty / ((taxRate / 100) + 1);
 	} //end of if (action == 'price_incl')
 	if (action == 'total_excl') {
-	var priceValue = document.getElementById("update_products[" + pid + "][total_excl]").value;
-	var finalPriceValue = document.getElementById("update_products[" + pid + "][total_excl]").value;
-	var priceInclValue = document.getElementById("update_products[" + pid + "][total_excl]").value;
-	var totalInclValue = document.getElementById("update_products[" + pid + "][total_excl]").value;
+	var priceValue = document.getElementById("update_products[" + pID + "][total_excl]").value;
+	var finalPriceValue = document.getElementById("update_products[" + pID + "][total_excl]").value;
+	var priceInclValue = document.getElementById("update_products[" + pID + "][total_excl]").value;
+	var totalInclValue = document.getElementById("update_products[" + pID + "][total_excl]").value;
 	priceValue = ( Number (finalPriceValue / qty) ) - Number (attValue);
 	finalPriceValue = finalPriceValue / qty;
 	priceInclValue = priceInclValue * ((taxRate / 100) + 1) / qty;
 	totalInclValue = totalInclValue * ((taxRate / 100) + 1);
 	} //end of if (action == 'total_excl')
 	if (action == 'total_incl') {
-	var priceValue = document.getElementById("update_products[" + pid + "][total_incl]").value;
-	var finalPriceValue = document.getElementById("update_products[" + pid + "][total_incl]").value;
-	var priceInclValue = document.getElementById("update_products[" + pid + "][total_incl]").value;
-	var totalExclValue = document.getElementById("update_products[" + pid + "][total_incl]").value;
+	var priceValue = document.getElementById("update_products[" + pID + "][total_incl]").value;
+	var finalPriceValue = document.getElementById("update_products[" + pID + "][total_incl]").value;
+	var priceInclValue = document.getElementById("update_products[" + pID + "][total_incl]").value;
+	var totalExclValue = document.getElementById("update_products[" + pID + "][total_incl]").value;
 	priceValue = Number (finalPriceValue / ((taxRate / 100) + 1) / qty) - Number(attValue)
 	finalPriceValue = finalPriceValue / ((taxRate / 100) + 1) / qty;
 	priceInclValue = priceInclValue / qty;
@@ -474,38 +474,38 @@ function init()
 	} //end of if (action == 'total_incl')
 
 	if ((action != 'qty') && (action != 'tax') && (action != 'att_price') && (action != 'price')) {
-	document.getElementById("update_products[" + pid + "][price]").value = doFormat(priceValue, 4);
+	document.getElementById("update_products[" + pID + "][price]").value = doFormat(priceValue, 4);
 	}
 	if (action != 'final_price') {
-	document.getElementById("update_products[" + pid + "][final_price]").value = doFormat(finalPriceValue, 4);
+	document.getElementById("update_products[" + pID + "][final_price]").value = doFormat(finalPriceValue, 4);
 	}
 	if ((action != 'qty') && (action != 'price_incl')) {
-	document.getElementById("update_products[" + pid + "][price_incl]").value = doFormat(priceInclValue, 4);
+	document.getElementById("update_products[" + pID + "][price_incl]").value = doFormat(priceInclValue, 4);
 	}
 	if ((action != 'tax') && (action != 'total_excl')) {
-	document.getElementById("update_products[" + pid + "][total_excl]").value = doFormat(totalExclValue, 4);
+	document.getElementById("update_products[" + pID + "][total_excl]").value = doFormat(totalExclValue, 4);
 	}
 	if (action != 'total_incl') {
-	document.getElementById("update_products[" + pid + "][total_incl]").value = doFormat(totalInclValue, 4);
+	document.getElementById("update_products[" + pID + "][total_incl]").value = doFormat(totalInclValue, 4);
 	}
-	} //end function updatePrices(action, pid)
-   function getAttributesPrices(pid){ //get any attributes prices that may exist
+	} //end function updatePrices(action, pID)
+   function getAttributesPrices(pID){ //get any attributes prices that may exist
     var sum =0;
     var el=document.getElementsByTagName('input');//all the input elements
       for(var i=0;i<el.length;i++){
-       if(el[i].id.indexOf(pid)>-1){
-        var aid=el[i].id.replace(pid,'').replace('p', '').replace('a', '');//extract the attribute id
-        var p=el[i].id.replace(pid,'').replace(/\d/g,'');
-          if((p=='pa') && (document.getElementById('p' + pid + '_' + aid + '_prefix')) && (document.getElementById('p' + pid + '_' + aid + '_prefix').value) == '-') {
+       if(el[i].id.indexOf(pID)>-1){
+        var aid=el[i].id.replace(pID,'').replace('p', '').replace('a', '');//extract the attribute id
+        var p=el[i].id.replace(pID,'').replace(/\d/g,'');
+          if((p=='pa') && (document.getElementById('p' + pID + '_' + aid + '_prefix')) && (document.getElementById('p' + pID + '_' + aid + '_prefix').value) == '-') {
            sum-=Number(el[i].value);
           }
-          if((p=='pa') && (document.getElementById('p' + pid + '_' + aid + '_prefix')) && (document.getElementById('p' + pid + '_' + aid + '_prefix').value) == '+') {
+          if((p=='pa') && (document.getElementById('p' + pID + '_' + aid + '_prefix')) && (document.getElementById('p' + pID + '_' + aid + '_prefix').value) == '+') {
            sum+=Number(el[i].value);
           }
          }
         }
       return sum
-     } //end function getAttributePrices(pid)
+     } //end function getAttributePrices(pID)
 	function doRound(x, places) {  //we only have so much space
      return Math.round(x * Math.pow(10, places)) / Math.pow(10, places);
     }
