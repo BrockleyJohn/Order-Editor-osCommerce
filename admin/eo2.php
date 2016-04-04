@@ -193,13 +193,13 @@
 
         // Update Products
         if (is_array($_POST['update_products'])) {
-          foreach($_POST['update_products'] as $orders_products_id => $products_details) {
+          foreach($_POST['update_products'] as $pID => $products_details) {
             //  Update Inventory Quantity
             $order_query = tep_db_query("
             SELECT products_id, products_quantity
             FROM " . TABLE_ORDERS_PRODUCTS . "
             WHERE orders_id = '" . $oID . "'
-            AND orders_products_id = '" . (int)$orders_products_id . "'");
+            AND orders_products_id = '" . $pID . "'");
             $order_products = tep_db_fetch_array($order_query);
 
             // First we do a stock check
@@ -215,7 +215,7 @@
                   $attrib_q = tep_db_query("select distinct op.products_id, po.products_options_id, pov.products_options_values_id
                                             from products_options po, products_options_values pov, products_options_values_to_products_options po2pov, orders_products_attributes opa, orders_products op 
                                             where op.orders_id = '" . $oID . "'
-                                            and op.orders_products_id = '" . $orders_products_id . "'
+                                            and op.orders_products_id = '" . $pID . "'
                                             and products_options_values_name = opa.products_options_values
                                             and pov.products_options_values_id = po2pov.products_options_values_id
                                             and po.products_options_id = po2pov.products_options_id
@@ -252,7 +252,7 @@
                     $attrib_q = tep_db_query("select distinct op.products_id, po.products_options_id, pov.products_options_values_id
                                                 from products_options po, products_options_values pov, products_options_values_to_products_options po2pov, orders_products_attributes opa, orders_products op
                                                 where op.orders_id = '" . $oID . "'
-                                                                  and op.orders_products_id = '" . $orders_products_id . "'
+                                                                  and op.orders_products_id = '" . $pID . "'
                                                                   and products_options_values_name = opa.products_options_values
                                                 and pov.products_options_values_id = po2pov.products_options_values_id
                                                 and po.products_options_id = po2pov.products_options_id
@@ -275,15 +275,15 @@
 
                     tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS . "
                                   WHERE orders_id = '" . $oID . "'
-                                  AND orders_products_id = '" . (int)$orders_products_id . "'");
+                                  AND orders_products_id = '" . $pID . "'");
 
                     tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . "
                                   WHERE orders_id = '" . $oID . "'
-                                  AND orders_products_id = '" . (int)$orders_products_id . "'");
+                                  AND orders_products_id = '" . $pID . "'");
 
                     tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . "
                                   WHERE orders_id = '" . $oID . "'
-                                  AND orders_products_id = '" . (int)$orders_products_id . "'");
+                                  AND orders_products_id = '" . $pID . "'");
 
            } else {
              //not deleted=> updated
@@ -297,7 +297,7 @@
                     products_tax = '" . $products_details["tax"] . "',
                     products_quantity = '" . $products_details["qty"] . "'
                     WHERE orders_id = '" . $oID . "'
-                    AND orders_products_id = '$orders_products_id';";
+                    AND orders_products_id = '$pID';";
                 tep_db_query($Query);
 
               // Update Any Attributes
@@ -333,6 +333,7 @@
       }   //end downloads
 
         //delete or update comments
+
         if (is_array($_POST['update_comments'])) {
           foreach($_POST['update_comments'] as $orders_status_history_id => $comments_details) {
             if (isset($comments_details['delete'])){
@@ -647,7 +648,7 @@
         break; // end case 'edit':
     } // end switch $action
   }
-
+echo $action;
   // currecies drop-down array
   $currency_query = tep_db_query("select distinct title, code from " . TABLE_CURRENCIES . " order by code ASC");
   $currency_array = array();
@@ -1017,17 +1018,17 @@
   <?php
   if (sizeof($order->products)) {
     for ($i=0; $i<sizeof($order->products); $i++) {
-      $orders_products_id = $order->products[$i]['orders_products_id'];  ?>
+      $pID = $order->products[$i]['orders_products_id'];  ?>
           <tr class="dataTableRow">
-            <td class="dataTableContent" valign="top"><div align="center"><input type="checkbox" name="<?php echo "update_products[" . $orders_products_id . "][delete]"; ?>" onClick="updateProductsField('delete', '<?php echo $orders_products_id; ?>', 'delete', this.checked, this)"></div></td>
-            <td class="dataTableContent" valign="top"><div align="center"><input type="tel" name="<?php echo "update_products[" . $orders_products_id . "][qty]"; ?>" size="2" onKeyUp="updatePrices('qty', '<?php echo $orders_products_id; ?>')" onChange="updateProductsField('reload1', '<?php echo $orders_products_id; ?>', 'products_quantity', encodeURIComponent(this.value))" value="<?php echo $order->products[$i]['qty']; ?>" id="<?php echo "update_products[" . $orders_products_id . "][qty]"; ?>"></div></td>
-            <td class="dataTableContent" valign="top"><input name="<?php echo "update_products[" . $orders_products_id . "][name]"; ?>" size="50" onChange="updateProductsField('update', '<?php echo $orders_products_id; ?>', 'products_name', encodeURIComponent(this.value))" value='<?php echo oe_html_quotes($order->products[$i]['name']); ?>'>
+            <td class="dataTableContent" valign="top"><div align="center"><input type="checkbox" name="<?php echo "update_products[" . $pID . "][delete]"; ?>" onClick="updateProductsField('delete', '<?php echo $pID; ?>', 'delete', this.checked, this)"></div></td>
+            <td class="dataTableContent" valign="top"><div align="center"><input type="tel" name="<?php echo "update_products[" . $pID . "][qty]"; ?>" size="2" onKeyUp="updatePrices('qty', '<?php echo $pID; ?>')" onChange="updateProductsField('reload1', '<?php echo $pID; ?>', 'products_quantity', encodeURIComponent(this.value))" value="<?php echo $order->products[$i]['qty']; ?>" id="<?php echo "update_products[" . $pID . "][qty]"; ?>"></div></td>
+            <td class="dataTableContent" valign="top"><input name="<?php echo "update_products[" . $pID . "][name]"; ?>" size="50" onChange="updateProductsField('update', '<?php echo $pID; ?>', 'products_name', encodeURIComponent(this.value))" value='<?php echo oe_html_quotes($order->products[$i]['name']); ?>'>
     <?php
       // Has Attributes?
      if (isset($order->products[$i]['attributes']) && (sizeof($order->products[$i]['attributes']) > 0)) {
         for ($j=0; $j<sizeof($order->products[$i]['attributes']); $j++) {
           $orders_products_attributes_id = $order->products[$i]['attributes'][$j]['orders_products_attributes_id'];
-                echo '<br><nobr><small>&nbsp;<i> - ' . "<input name='update_products[$orders_products_id][attributes][$orders_products_attributes_id][option]' size='6' value='" . oe_html_quotes($order->products[$i]['attributes'][$j]['option']) . "' onChange=\"updateAttributesField('simple', 'products_options', '" . $orders_products_attributes_id . "', '" . $orders_products_id . "', encodeURIComponent(this.value))\">" . ': ' . "<input name='update_products[$orders_products_id][attributes][$orders_products_attributes_id][value]' size='10' value='" . oe_html_quotes($order->products[$i]['attributes'][$j]['value']) . "' onChange=\"updateAttributesField('simple', 'products_options_values', '" . $orders_products_attributes_id . "', '" . $orders_products_id . "', encodeURIComponent(this.value))\">" . ': ' . "</i><input name='update_products[$orders_products_id][attributes][$orders_products_attributes_id][prefix]' size='1' id='p" . $orders_products_id . "_" . $orders_products_attributes_id . "_prefix' value='" . $order->products[$i]['attributes'][$j]['prefix'] . "' onKeyUp=\"updatePrices('att_price', '" . $orders_products_id . "')\" onChange=\"updateAttributesField('hard', 'price_prefix', '" . $orders_products_attributes_id . "', '" . $orders_products_id . "', encodeURIComponent(this.value))\">" . ': ' . "<input name='update_products[$orders_products_id][attributes][$orders_products_attributes_id][price]' size='7' value='" . $order->products[$i]['attributes'][$j]['price'] . "' onKeyUp=\"updatePrices('att_price', '" . $orders_products_id . "')\" onChange=\"updateAttributesField('hard', 'options_values_price', '" . $orders_products_attributes_id . "', '" . $orders_products_id . "', encodeURIComponent(this.value))\" id='p". $orders_products_id . "a" . $orders_products_attributes_id . "'>";
+                echo '<br><nobr><small>&nbsp;<i> - ' . "<input name='update_products[$pID][attributes][$orders_products_attributes_id][option]' size='6' value='" . oe_html_quotes($order->products[$i]['attributes'][$j]['option']) . "' onChange=\"updateAttributesField('simple', 'products_options', '" . $orders_products_attributes_id . "', '" . $pID . "', encodeURIComponent(this.value))\">" . ': ' . "<input name='update_products[$pID][attributes][$orders_products_attributes_id][value]' size='10' value='" . oe_html_quotes($order->products[$i]['attributes'][$j]['value']) . "' onChange=\"updateAttributesField('simple', 'products_options_values', '" . $orders_products_attributes_id . "', '" . $pID . "', encodeURIComponent(this.value))\">" . ': ' . "</i><input name='update_products[$pID][attributes][$orders_products_attributes_id][prefix]' size='1' id='p" . $pID . "_" . $orders_products_attributes_id . "_prefix' value='" . $order->products[$i]['attributes'][$j]['prefix'] . "' onKeyUp=\"updatePrices('att_price', '" . $pID . "')\" onChange=\"updateAttributesField('hard', 'price_prefix', '" . $orders_products_attributes_id . "', '" . $pID . "', encodeURIComponent(this.value))\">" . ': ' . "<input name='update_products[$pID][attributes][$orders_products_attributes_id][price]' size='7' value='" . $order->products[$i]['attributes'][$j]['price'] . "' onKeyUp=\"updatePrices('att_price', '" . $pID . "')\" onChange=\"updateAttributesField('hard', 'options_values_price', '" . $orders_products_attributes_id . "', '" . $pID . "', encodeURIComponent(this.value))\" id='p". $pID . "a" . $orders_products_attributes_id . "'>";
 
                 echo '</small></nobr>';
             }  //end for ($j=0; $j<sizeof($order->products[$i]['attributes']); $j++) {
@@ -1039,7 +1040,7 @@
    $d_index = 0;
    $download_query_raw ="SELECT orders_products_download_id, orders_products_filename, download_maxdays, download_count
                          FROM orders_products_download
-                         WHERE orders_products_id='" . $orders_products_id . "'
+                         WHERE orders_products_id='" . $pID . "'
                          AND orders_id='" . $oID . "'
                          ORDER BY orders_products_download_id";
 
@@ -1071,11 +1072,11 @@
     echo ' </nobr><br>' . "\n";
 
 
-      echo '<nobr>&nbsp;- ' . ENTRY_DOWNLOAD_FILENAME . ": <input name='update_downloads[" . $id . "][filename]' size='12' value='" . $downloads->products[$mm]['filename'] . "' onChange=\"updateDownloads('orders_products_filename', '" . $id . "', '" . $orders_products_id . "', this.value)\">";
+      echo '<nobr>&nbsp;- ' . ENTRY_DOWNLOAD_FILENAME . ": <input name='update_downloads[" . $id . "][filename]' size='12' value='" . $downloads->products[$mm]['filename'] . "' onChange=\"updateDownloads('orders_products_filename', '" . $id . "', '" . $pID . "', this.value)\">";
       echo ' </nobr><br>' . "\n";
-      echo '<nobr>&nbsp;- ' . ENTRY_DOWNLOAD_MAXDAYS . ": <input name='update_downloads[" . $id . "][maxdays]' size='6' value='" . $downloads->products[$mm]['maxdays'] . "' onChange=\"updateDownloads('download_maxdays', '" . $id . "', '" . $orders_products_id . "', this.value)\">";
+      echo '<nobr>&nbsp;- ' . ENTRY_DOWNLOAD_MAXDAYS . ": <input name='update_downloads[" . $id . "][maxdays]' size='6' value='" . $downloads->products[$mm]['maxdays'] . "' onChange=\"updateDownloads('download_maxdays', '" . $id . "', '" . $pID . "', this.value)\">";
       echo ' </nobr><br>' . "\n";
-      echo '<nobr>&nbsp;- ' . ENTRY_DOWNLOAD_MAXCOUNT . ": <input name='update_downloads[" . $id . "][maxcount]' size='6' value='" . $downloads->products[$mm]['maxcount'] . "' onChange=\"updateDownloads('download_count', '" . $id . "', '" . $orders_products_id . "', this.value)\">";
+      echo '<nobr>&nbsp;- ' . ENTRY_DOWNLOAD_MAXCOUNT . ": <input name='update_downloads[" . $id . "][maxcount]' size='6' value='" . $downloads->products[$mm]['maxcount'] . "' onChange=\"updateDownloads('download_count', '" . $id . "', '" . $pID . "', this.value)\">";
       
 
      echo ' </nobr>' . "\n";
@@ -1087,13 +1088,13 @@
   } //end if (sizeof($order->products[$i]['attributes']) > 0) {
 ?>
             </td>
-            <td class="dataTableContent" valign="top"><input name="<?php echo "update_products[" . $orders_products_id . "][model]"; ?>" size="12" onChange="updateProductsField('update', '<?php echo $orders_products_id; ?>', 'products_model', encodeURIComponent(this.value))" value="<?php echo $order->products[$i]['model']; ?>"></td>
-            <td class="dataTableContent" valign="top"><input type="tel" name="<?php echo "update_products[" . $orders_products_id . "][tax]"; ?>" size="5" onKeyUp="updatePrices('tax', '<?php echo $orders_products_id; ?>')" onChange="updateProductsField('reload1', '<?php echo $orders_products_id; ?>', 'products_tax', encodeURIComponent(this.value))" value="<?php echo tep_display_tax_value($order->products[$i]['tax']); ?>" id="<?php echo "update_products[" . $orders_products_id . "][tax]"; ?>">%</td>
-            <td class="dataTableContent" valign="top"><input type="tel" name="<?php echo "update_products[" . $orders_products_id . "][price]"; ?>" size="5" onKeyUp="updatePrices('price', '<?php echo $orders_products_id; ?>')" onChange="updateProductsField('reload2', '<?php echo $orders_products_id; ?>')" value="<?php echo @number_format($order->products[$i]['price'], 4, '.', ''); ?>" id="<?php echo "update_products[" . $orders_products_id . "][price]"; ?>"></td>
-            <td class="dataTableContent" valign="top"><input type="tel" name="<?php echo "update_products[" . $orders_products_id . "][final_price]"; ?>" size="5" onKeyUp="updatePrices('final_price', '<?php echo $orders_products_id; ?>')" onChange="updateProductsField('reload2', '<?php echo $orders_products_id; ?>')" value="<?php echo @number_format($order->products[$i]['final_price'], 4, '.', ''); ?>" id="<?php echo "update_products[" . $orders_products_id . "][final_price]"; ?>"></td>
-            <td class="dataTableContent" valign="top"><input type="tel" name="<?php echo "update_products[" . $orders_products_id . "][price_incl]"; ?>" size="5" value="<?php echo number_format(($order->products[$i]['final_price'] * (($order->products[$i]['tax']/100) + 1)), 4, '.', ''); ?>" onKeyUp="updatePrices('price_incl', '<?php echo $orders_products_id; ?>')" onChange="updateProductsField('reload2', '<?php echo $orders_products_id; ?>')" id="<?php echo "update_products[" . $orders_products_id . "][price_incl]"; ?>"></td>
-            <td class="dataTableContent" valign="top"><input type="tel" name="<?php echo "update_products[" . $orders_products_id . "][total_excl]"; ?>" size="5" value="<?php echo number_format($order->products[$i]['final_price'] * $order->products[$i]['qty'], 4, '.', ''); ?>" onKeyUp="updatePrices('total_excl', '<?php echo $orders_products_id; ?>')" onChange="updateProductsField('reload2', '<?php echo $orders_products_id; ?>')" id="<?php echo "update_products[" . $orders_products_id . "][total_excl]"; ?>"></td>
-            <td class="dataTableContent" valign="top"><input type="tel" name="<?php echo "update_products[" . $orders_products_id . "][total_incl]"; ?>" size="5" value="<?php echo number_format((($order->products[$i]['final_price'] * (($order->products[$i]['tax']/100) + 1))) * $order->products[$i]['qty'], 4, '.', ''); ?>" onKeyUp="updatePrices('total_incl', '<?php echo $orders_products_id; ?>')" onChange="updateProductsField('reload2', '<?php echo $orders_products_id; ?>')" id="<?php echo "update_products[" . $orders_products_id . "][total_incl]"; ?>"></td>
+            <td class="dataTableContent" valign="top"><input name="<?php echo "update_products[" . $pID . "][model]"; ?>" size="12" onChange="updateProductsField('update', '<?php echo $pID; ?>', 'products_model', encodeURIComponent(this.value))" value="<?php echo $order->products[$i]['model']; ?>"></td>
+            <td class="dataTableContent" valign="top"><input type="tel" name="<?php echo "update_products[" . $pID . "][tax]"; ?>" size="5" onKeyUp="updatePrices('tax', '<?php echo $pID; ?>')" onChange="updateProductsField('reload1', '<?php echo $pID; ?>', 'products_tax', encodeURIComponent(this.value))" value="<?php echo tep_display_tax_value($order->products[$i]['tax']); ?>" id="<?php echo "update_products[" . $pID . "][tax]"; ?>">%</td>
+            <td class="dataTableContent" valign="top"><input type="tel" name="<?php echo "update_products[" . $pID . "][price]"; ?>" size="5" onKeyUp="updatePrices('price', '<?php echo $pID; ?>')" onChange="updateProductsField('reload2', '<?php echo $pID; ?>')" value="<?php echo @number_format($order->products[$i]['price'], 4, '.', ''); ?>" id="<?php echo "update_products[" . $pID . "][price]"; ?>"></td>
+            <td class="dataTableContent" valign="top"><input type="tel" name="<?php echo "update_products[" . $pID . "][final_price]"; ?>" size="5" onKeyUp="updatePrices('final_price', '<?php echo $pID; ?>')" onChange="updateProductsField('reload2', '<?php echo $pID; ?>')" value="<?php echo @number_format($order->products[$i]['final_price'], 4, '.', ''); ?>" id="<?php echo "update_products[" . $pID . "][final_price]"; ?>"></td>
+            <td class="dataTableContent" valign="top"><input type="tel" name="<?php echo "update_products[" . $pID . "][price_incl]"; ?>" size="5" value="<?php echo number_format(($order->products[$i]['final_price'] * (($order->products[$i]['tax']/100) + 1)), 4, '.', ''); ?>" onKeyUp="updatePrices('price_incl', '<?php echo $pID; ?>')" onChange="updateProductsField('reload2', '<?php echo $pID; ?>')" id="<?php echo "update_products[" . $pID . "][price_incl]"; ?>"></td>
+            <td class="dataTableContent" valign="top"><input type="tel" name="<?php echo "update_products[" . $pID . "][total_excl]"; ?>" size="5" value="<?php echo number_format($order->products[$i]['final_price'] * $order->products[$i]['qty'], 4, '.', ''); ?>" onKeyUp="updatePrices('total_excl', '<?php echo $pID; ?>')" onChange="updateProductsField('reload2', '<?php echo $pID; ?>')" id="<?php echo "update_products[" . $pID . "][total_excl]"; ?>"></td>
+            <td class="dataTableContent" valign="top"><input type="tel" name="<?php echo "update_products[" . $pID . "][total_incl]"; ?>" size="5" value="<?php echo number_format((($order->products[$i]['final_price'] * (($order->products[$i]['tax']/100) + 1))) * $order->products[$i]['qty'], 4, '.', ''); ?>" onKeyUp="updatePrices('total_incl', '<?php echo $pID; ?>')" onChange="updateProductsField('reload2', '<?php echo $pID; ?>')" id="<?php echo "update_products[" . $pID . "][total_incl]"; ?>"></td>
           </tr>
 
 <?php
