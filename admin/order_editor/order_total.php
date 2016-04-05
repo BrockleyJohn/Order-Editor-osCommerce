@@ -19,7 +19,7 @@
     var $modules;
 
 // class constructor
-    function order_total() {
+    function __construct() {
       global $language;
 
       if (defined('MODULE_ORDER_TOTAL_INSTALLED') && tep_not_null(MODULE_ORDER_TOTAL_INSTALLED)) {
@@ -43,6 +43,7 @@
         while (list(, $value) = each($this->modules)) {
           $class = substr($value, 0, strrpos($value, '.'));
           if ($GLOBALS[$class]->enabled) {
+            $GLOBALS[$class]->output = array();
             $GLOBALS[$class]->process();
 
             for ($i=0, $n=sizeof($GLOBALS[$class]->output); $i<$n; $i++) {

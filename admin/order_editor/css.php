@@ -1,5 +1,8 @@
 <style type="text/css"><!--
 
+#icon-remove {
+background-image: url('../ext/jquery/ui/redmond/images/ui-icons_cd0a0a_256x240.png');
+}
   .SubTitle {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 11px;
@@ -115,6 +118,7 @@
    
    #ordersMessageStack {
    left: 30px;
+   width:100%;
    clear: both;
    }
    

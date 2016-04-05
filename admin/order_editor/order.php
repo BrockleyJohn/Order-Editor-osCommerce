@@ -13,7 +13,7 @@
   class manualOrder {
     var $info, $totals, $products, $customer, $delivery;
 
-    function manualOrder($order_id) {
+    function __construct($order_id) {
       $this->info = array();
       $this->totals = array();
       $this->products = array();
@@ -25,20 +25,18 @@
 
     function query($order_id) {
       global $shipping;
-    
       $order_query = tep_db_query("select * from orders where orders_id = '" . (int)$order_id . "'");
       $order = tep_db_fetch_array($order_query);
 
       $totals_query = tep_db_query("select * from " . TABLE_ORDERS_TOTAL . " where orders_id = '" . (int)$order_id . "' order by sort_order");
 
-	  while ($totals = tep_db_fetch_array($totals_query)) {
-        $this->totals[] = array(
-	  'title' => $totals['title'], 
-	  'text' => $totals['text'], 
-	  'class' => $totals['class'], 
-	  'value' => $totals['value'],
-	  'sort_order' => $totals['sort_order'], 
-	  'orders_total_id' => $totals['orders_total_id']);
+      while ($totals = tep_db_fetch_array($totals_query)) {
+        $this->totals[] = array('title' => $totals['title'],
+    'text' => $totals['text'],
+    'class' => $totals['class'],
+    'value' => $totals['value'],
+    'sort_order' => $totals['sort_order'],
+    'orders_total_id' => $totals['orders_total_id']);
       }
 
       $this->info = array('currency' => $order['currency'],
@@ -55,31 +53,25 @@
                           'shipping_method' => $shipping['title'],
                           'shipping_cost' => $shipping['cost'],
                           'shipping_id' => $order['shipping_module'],
-                          'orders_peso' => $order['orders_peso'],
-                          'orders_peso_vol' => $order['orders_peso_vol'],
-			     'box_l' => $order['box_l'],
-			     'box_a' => $order['box_a'],
-			     'box_h' => $order['box_h'],
                           'subtotal' => 0,
                           'tax' => 0,
                           'tax_groups' => array(),
                           'language_id' => $order['language_id']);
-                          
-      $this->customer = array('id' => $order['customers_id'],
-	                          'name' => $order['customers_name'],
-							  'company' => $order['customers_company'],
-							  'nick' => $order['customers_nick'],
+
+      $this->customer = array('name' => $order['customers_name'],
+                              'company' => $order['customers_company'],
                               'street_address' => $order['customers_street_address'],
                               'suburb' => $order['customers_suburb'],
                               'city' => $order['customers_city'],
                               'postcode' => $order['customers_postcode'],
                               'state' => $order['customers_state'],
                               'country' => $order['customers_country'],
-							  'country_id' => oe_get_country_id($order['customers_country']),
-							  'zone_id' => oe_get_zone_id(oe_get_country_id($order['customers_country']), $order['customers_state']),  
+                'country_id' => oe_get_country_id($order['customers_country']),
+                'zone_id' => oe_get_zone_id(oe_get_country_id($order['customers_country']), $order['customers_state']),
                               'format_id' => $order['customers_address_format_id'],
                               'telephone' => $order['customers_telephone'],
-                              'email_address' => $order['customers_email_address']);
+                              'email_address' => $order['customers_email_address'],
+                              'id' => $order['customers_id']);
 
       $this->delivery = array('name' => $order['delivery_name'],
                               'company' => $order['delivery_company'],
@@ -89,42 +81,40 @@
                               'postcode' => $order['delivery_postcode'],
                               'state' => $order['delivery_state'],
                               'country' => $order['delivery_country'],
-							  'country_id' => oe_get_country_id($order['delivery_country']),
-							  'zone_id' => oe_get_zone_id(oe_get_country_id($order['delivery_country']), $order['delivery_state']),
+                'country_id' => oe_get_country_id($order['delivery_country']),
+                'zone_id' => oe_get_zone_id(oe_get_country_id($order['delivery_country']), $order['delivery_state']),
                               'format_id' => $order['delivery_address_format_id']);
 
       $this->billing = array('name' => $order['billing_name'],
                              'company' => $order['billing_company'],
-							 'nif' => $order['billing_nif'],
                              'street_address' => $order['billing_street_address'],
                              'suburb' => $order['billing_suburb'],
                              'city' => $order['billing_city'],
                              'postcode' => $order['billing_postcode'],
                              'state' => $order['billing_state'],
                              'country' => $order['billing_country'],
-							 'country_id' => oe_get_country_id($order['billing_country']),
-							 'zone_id' => oe_get_zone_id(oe_get_country_id($order['billing_country']), $order['billing_state']),
+               'country_id' => oe_get_country_id($order['billing_country']),
+               'zone_id' => oe_get_zone_id(oe_get_country_id($order['billing_country']), $order['billing_state']),
                              'format_id' => $order['billing_address_format_id']);
 
-	  
+
       $index = 0;
       $orders_products_query = tep_db_query("select orders_products_id, products_id, products_name, products_model, products_price, products_tax, products_quantity, final_price from " . TABLE_ORDERS_PRODUCTS . " where orders_id = '" . (int)$order_id . "' order by orders_products_id");
-	
+
       while ($orders_products = tep_db_fetch_array($orders_products_query)) {
-        
+
         $orders_products_tax_query = tep_db_query("select products_tax_class_id from " .TABLE_PRODUCTS . " where products_id = " . $orders_products['products_id'] . "");
         $orders_products_tax = tep_db_fetch_array($orders_products_tax_query);
-		 
-        $this->products[$index] = array(		
-        'qty' => $orders_products['products_quantity'],
-        'name' => $orders_products['products_name'],
-        'model' => $orders_products['products_model'],
-        'tax' => $orders_products['products_tax'],
-        'tax_description' => tep_get_tax_description($orders_products_tax['products_tax_class_id'], $this->delivery["country_id"], $this->delivery["zone_id"]),
-        'price' => $orders_products['products_price'],
-        'final_price' => $orders_products['final_price'],
-        'products_id' => $orders_products['products_id'],
-        'orders_products_id' => $orders_products['orders_products_id']);
+
+        $this->products[$index] = array('qty' => $orders_products['products_quantity'],
+                                        'name' => $orders_products['products_name'],
+                                        'model' => $orders_products['products_model'],
+                                        'tax' => $orders_products['products_tax'],
+                                        'tax_description' => tep_get_tax_description($orders_products_tax['products_tax_class_id'], $this->delivery["country_id"], $this->delivery["zone_id"]),
+                                        'price' => $orders_products['products_price'],
+                                        'final_price' => $orders_products['final_price'],
+                                        'products_id' => $orders_products['products_id'],
+                                        'orders_products_id' => $orders_products['orders_products_id']);
 
         $subindex = 0;
         $attributes_query = tep_db_query("select products_options, products_options_values, options_values_price, price_prefix, orders_products_attributes_id from " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . " where orders_id = '" . (int)$order_id . "' and orders_products_id = '" . (int)$orders_products['orders_products_id'] . "'");
@@ -134,7 +124,7 @@
                                                                      'value' => $attributes['products_options_values'],
                                                                      'prefix' => $attributes['price_prefix'],
                                                                      'price' => $attributes['options_values_price'],
-                                             'orders_products_attributes_id' => $attributes['orders_products_attributes_id']);
+                                                                     'orders_products_attributes_id' => $attributes['orders_products_attributes_id']);
 
             $subindex++;
           }
@@ -170,7 +160,7 @@
         $this->info['total'] = $this->info['subtotal'] + $this->info['tax'] + $this->info['shipping_cost'];
       }
     }
- 
+
     function adjust_zones() {
       $customer_country_id = oe_get_country_id($this->customer['country']);
       $this->customer['country'] = array('id' => $customer_country_id,
@@ -191,10 +181,10 @@
                                          'title' => $this->delivery['country'],
                                          'iso_code_2' => oe_get_country_iso_code_2($delivery_country_id),
                                          'iso_code_3' => oe_get_country_iso_code_3($delivery_country_id));
-      $this->delivery['zone_id'] = oe_get_zone_id($delivery_country_id, $this->delivery['state']);   
+      $this->delivery['zone_id'] = oe_get_zone_id($delivery_country_id, $this->delivery['state']);
     }
-       
-	       function adjust_totals($order_id) {
+
+         function adjust_totals($order_id) {
       $totals_query = tep_db_query("select orders_total_id, title, text, class, value from " . TABLE_ORDERS_TOTAL . " where orders_id = '" . (int)$order_id . "' order by sort_order");
       $this->totals = array();
       $i=0;
@@ -213,10 +203,7 @@
         $i=$i+2;
       }
       array_pop($this->totals);
-      
+
       return $shipping_index;
     }
-
-
   }
-?>

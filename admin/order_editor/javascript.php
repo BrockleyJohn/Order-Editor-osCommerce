@@ -24,19 +24,19 @@ var xmlHttp = false;
   
   function rewriteDiv(field, stack) {
     if (stack == 'orders') {
-      document.getElementById("ordersMessageStack").innerHTML ='<table><tr class="messageStackSuccess"><td class="messageStackSuccess"><?php echo tep_image(DIR_WS_ICONS . 'success.gif', ICON_SUCCESS) . '&nbsp;' . sprintf(AJAX_MESSAGE_STACK_SUCCESS, 'field'); ?></td></tr></table>' ;
+      document.getElementById("ordersMessageStack").innerHTML ='<div class="messageStackSuccess"><td class="messageStackSuccess"><span style="float: left;" class="ui-icon ui-icon-lightbulb"></span><?php echo sprintf(AJAX_MESSAGE_STACK_SUCCESS, 'field'); ?></div>';
       document.getElementById("productsMessageStack").innerHTML ='<?php echo tep_draw_separator('pixel_trans.gif', '1', '10'); ?>' ;
       document.getElementById("historyMessageStack").innerHTML ='<?php echo tep_draw_separator('pixel_trans.gif', '1', '10'); ?>' ;
     }
     
     if (stack == 'products') {
-      document.getElementById("productsMessageStack").innerHTML ='<table><tr class="messageStackSuccess"><td class="messageStackSuccess"><?php echo tep_image(DIR_WS_ICONS . 'success.gif', ICON_SUCCESS) . '&nbsp;' . sprintf(AJAX_MESSAGE_STACK_SUCCESS, 'field'); ?></td></tr></table>' ;
+      document.getElementById("productsMessageStack").innerHTML ='<div class="messageStackSuccess"><td class="messageStackSuccess"><span style="float: left;" class="ui-icon ui-icon-lightbulb"></span><?php echo sprintf(AJAX_MESSAGE_STACK_SUCCESS, 'field'); ?></div>';
       document.getElementById("historyMessageStack").innerHTML ='<?php echo tep_draw_separator('pixel_trans.gif', '1', '10'); ?>' ;
       document.getElementById("ordersMessageStack").innerHTML ='<?php echo tep_draw_separator('pixel_trans.gif', '1', '10'); ?>' ;
     }
 
     if (stack == 'history') {
-      document.getElementById("historyMessageStack").innerHTML ='<table><tr class="messageStackSuccess"><td class="messageStackSuccess"><?php echo tep_image(DIR_WS_ICONS . 'success.gif', ICON_SUCCESS) . '&nbsp;' . sprintf(AJAX_MESSAGE_STACK_SUCCESS, 'field'); ?></td></tr></table>' ;
+      document.getElementById("historyMessageStack").innerHTML ='<table><tr class="messageStackSuccess"><td class="messageStackSuccess"><td class="messageStackSuccess"><span style="float: left;" class="ui-icon ui-icon-lightbulb"></span><?php echo sprintf(AJAX_MESSAGE_STACK_SUCCESS, 'field'); ?></div>';
       document.getElementById("ordersMessageStack").innerHTML ='<?php echo tep_draw_separator('pixel_trans.gif', '1', '10'); ?>' ;
       document.getElementById("productsMessageStack").innerHTML ='<?php echo tep_draw_separator('pixel_trans.gif', '1', '10'); ?>' ;
     }

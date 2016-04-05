@@ -1,7 +1,8 @@
 <?php
+// reload_totals.php begins
       $oID = $_POST['oID'];
       $shipping = array();
-
+// almacena los totales de envío a actualizar en la variable $shipping
       if (is_array($_POST['update_totals'])) {
         foreach($_POST['update_totals'] as $total_index => $total_details) {
           extract($total_details, EXTR_PREFIX_ALL, "ot");
@@ -15,6 +16,7 @@
         } //end foreach
       } //end if is_array
 
+// actualiza el nuevo shipping_module en la tabla orders
       if (tep_not_null($shipping['id'])) {
         tep_db_query("UPDATE " . TABLE_ORDERS . " SET shipping_module = '" . $shipping['id'] . "' WHERE orders_id = '" . $oID . "'");
       }
@@ -32,18 +34,12 @@
       $shipping_quotes = $shipping_modules->quote();
 
       $module = substr($GLOBALS['shipping']['id'], 0, strpos($GLOBALS['shipping']['id'], '_'));
-//        echo $module;
-// echo $shipping['title'];
-// echo $shipping  ->class;
 //      $tax = tep_get_tax_rate($GLOBALS[$module]->tax_class, $order->delivery['country']['id'], $order->delivery['zone_id']);
         $tax = tep_get_tax_rate($shipping_modules, $order->delivery['country']['id'], $order->delivery['zone_id']);
 ///      $tax = tep_get_tax_rate($module->tax_class, $order->delivery['country']['id'], $order->delivery['zone_id']);
-//      echo $$tax ."TAX";
+
 
         if (DISPLAY_PRICE_WITH_TAX == 'true') {//extract the base shipping cost or the ot_shipping module will add tax to it again
-//        echo $order->info['total'] . '<br>';
-//          echo $order->info['total'] . '<br>';
-//          echo $order->info['shipping_cost'] . '<br>';
 
           $order->info['total'] -= ( $order->info['shipping_cost'] - ($order->info['shipping_cost'] / (1 + ($tax /100))) );
           $order->info['shipping_cost'] = ($order->info['shipping_cost'] / (1 + ($tax /100)));
@@ -131,7 +127,7 @@
                 $written_ot_totals_array[] = $ot_class;
                 $written_ot_titles_array[] = $ot_title;
                 $j++;
-                // echo $order_totals[$i]['code'] . "<br>";  ////for debugging- use of this results in errors
+                // echo $order_totals[$i]['code'] . "<br>"; for debugging- use of this results in errors
 
               } elseif ($new_ot_total) { //also within 6
                 $order->info['total'] += ($order_totals[$i]['value']*(-1));
@@ -205,3 +201,5 @@
         $cart->restore_contents($oID);
         $total_count = $cart->count_contents();
         $total_weight = $cart->show_weight();
+
+// reload_totals.php end

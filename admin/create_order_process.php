@@ -207,7 +207,7 @@
     }
   }
   
-  tep_redirect(tep_href_link('eo.php', 'oID=' . $insert_id, 'SSL'));
+  tep_redirect(tep_href_link('edit_orders.php', 'oID=' . $insert_id, 'SSL'));
 
   require(DIR_WS_INCLUDES . 'application_bottom.php');
 

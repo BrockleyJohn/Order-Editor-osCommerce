@@ -70,8 +70,8 @@
       } //end if ($order->totals[$i]['class'] == 'ot_shipping') {
 
     $rowStyle = (($i % 2) ? 'dataTableRowOver' : 'dataTableRow');
-///////////////////////////////	<!-- OJO ESTO CAMBIA EN AJAX-> if reload_totals (funcion 11)!!! -->
-    if (($order->totals[$i]['class'] == 'ot_total') || ($order->totals[$i]['class'] == 'ot_subtotal') || ($order->totals[$i]['class'] == 'ot_tax') || ($order->totals[$i]['class'] == 'ot_loworderfee') ) {
+///////////////////////////////	<!-- OJO ESTO CAMBIA EN TOTALSBLOCK!!! -->
+    if ((!strstr($order->totals[$i]['class'], 'ot_custom')) && ($order->totals[$i]['class'] != 'ot_shipping')) {
 ?>
                     <tr class="<?= $rowStyle ?>">
 <?php
@@ -110,7 +110,7 @@
                           <tr class="<?= $rowStyle ?>" id="update_totals[<?= $i ?>]" style="visibility: hidden; display: none;">
                             <td class="dataTableContent" valign="middle" height="15">
                               <a href='javascript:setCustomOTVisibility("update_totals[<?= $i ?>]", "hidden", "update_totals[<?= ($i-1) ?>]")'>
-                                <span title="<?= IMAGE_REMOVE_NEW_OT ?>" id="icon-remove" class="ui-icon ui-icon-circle-minus"></span>
+                                <span title="<?= IMAGE_REMOVE_NEW_OT ?>" id="icon-remove" class="ui-icon ui-icon-circle-minus";"></span>
                               </a>
                             </td>
 <?php
