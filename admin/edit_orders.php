@@ -26,16 +26,14 @@
     // habrá que crear tablas nuevas para el backup: oe_orders, oe_orders_products...
    }
 
-  // include the appropriate functions & classes
-  include('order_editor/functions.php');
-  include('order_editor/cart.php');
-  include('order_editor/order.php');
-  include('order_editor/shipping.php');
+  // require the appropriate functions & classes
+  require('order_editor/functions.php');
+  require('order_editor/manualcart.php');
+  require('order_editor/manualorder.php');
+  require('order_editor/shipping.php');
+  require(DIR_WS_LANGUAGES . $language. '/' . 'edit_orders.php');
 
-//  include('order_editor/http_client.php');
-  include(DIR_WS_LANGUAGES . $language. '/' . 'edit_orders.php');
-
-  // Include currencies class
+  // require currencies class
   require(DIR_WS_CLASSES . 'currencies.php');
   $currencies = new currencies();
 
@@ -67,6 +65,15 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
         // Set this Session's variables
         if (isset($_POST['billing_same_as_customer'])) $_SESSION['billing_same_as_customer'] = $_POST['billing_same_as_customer'];
         if (isset($_POST['shipping_same_as_billing'])) $_SESSION['shipping_same_as_billing'] = $_POST['shipping_same_as_billing'];
+        
+        // Set notifications variables
+        if (sizeof($_POST) > 0) {
+          $status = (isset($_POST['status']) ? tep_db_prepare_input($_POST['status']) : '');
+          $comments = (isset($_POST['comments']) ? tep_db_prepare_input($_POST['comments']) : null);
+          $notify = (isset($_POST['notify']) ? tep_db_prepare_input($_POST['notify']) : null);
+          $notify_comments = (isset($_POST['notify_comments']) ? tep_db_prepare_input($_POST['notify_comments']) : null);
+        }
+        
 
           // Update Order Info
         //figure out the new currency value
@@ -124,48 +131,9 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
 
         tep_db_perform(TABLE_ORDERS, $sql_data_array, 'update', 'orders_id = \'' . tep_db_input($oID) . '\'');
         $order_updated = true;
-
-  // UPDATE STATUS HISTORY & SEND EMAIL TO CUSTOMER IF NECESSARY #####
-
-        $check_status_query = tep_db_query("SELECT customers_name, customers_email_address, orders_status, date_purchased
-                                            FROM " . TABLE_ORDERS . "
-                                            WHERE orders_id = '" . (int)$oID . "'");
-
-        $check_status = tep_db_fetch_array($check_status_query);
-
-        if (($check_status['orders_status'] != $_POST['status']) || (tep_not_null($_POST['comments']))) {
-
-          tep_db_query("UPDATE " . TABLE_ORDERS . " SET
-                        orders_status = '" . tep_db_input($_POST['status']) . "',
-                        last_modified = now()
-                        WHERE orders_id = '" . (int)$oID . "'");
-
-          // Notify Customer ?
-          $customer_notified = '0';
-          if (isset($_POST['notify']) && ($_POST['notify'] == 'on')) {
-            $notify_comments = '';
-            if (isset($_POST['notify_comments']) && ($_POST['notify_comments'] == 'on')) {
-              $notify_comments = sprintf(EMAIL_TEXT_COMMENTS_UPDATE, $_POST['comments']) . "\n\n";
-            }
-            $email = STORE_NAME . "\n" .
-                     EMAIL_SEPARATOR . "\n" .
-                     EMAIL_TEXT_ORDER_NUMBER . ' ' . (int)$oID . "\n" .
-                     EMAIL_TEXT_INVOICE_URL . ' ' . tep_catalog_href_link(FILENAME_CATALOG_ACCOUNT_HISTORY_INFO, 'order_id=' . (int)$oID, 'SSL') . "\n" .
-                      EMAIL_TEXT_DATE_ORDERED . ' ' . tep_date_long($check_status['date_purchased']) . "\n\n" . sprintf(EMAIL_TEXT_STATUS_UPDATE, $orders_status_array[$status]) . $notify_comments . sprintf(EMAIL_TEXT_STATUS_UPDATE2);
-
-            tep_mail($check_status['customers_name'], $check_status['customers_email_address'], EMAIL_TEXT_SUBJECT, $email, STORE_OWNER, STORE_OWNER_EMAIL_ADDRESS);
-
-            $customer_notified = '1';
-          }
-
-          tep_db_query("INSERT into " . TABLE_ORDERS_STATUS_HISTORY . "
-                        (orders_id, orders_status_id, date_added, customer_notified, comments)
-                        values ('" . tep_db_input($_GET['oID']) . "',
-                        '" . tep_db_input($_POST['status']) . "',
-                        now(),
-                        " . tep_db_input($customer_notified) . ",
-                        '" . tep_db_input(tep_db_prepare_input($_POST['comments']))  . "')");
-        }
+        
+        require ('order_editor/templates/update_status_history.php');
+       
 //////////////////
 // Update Products
 //////////////////
@@ -175,7 +143,7 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
           //  Update Inventory Quantity
           $order_query = tep_db_query("SELECT products_id, products_quantity
                                        FROM " . TABLE_ORDERS_PRODUCTS . "
-                                       WHERE orders_id = '" . (int)$oID . "'
+                                       WHERE orders_id = '" . $oID . "'
                                        AND orders_products_id = '" . (int)$orders_products_id . "'");
           $order_products = tep_db_fetch_array($order_query);
 
@@ -215,7 +183,7 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
           }
 
           if ( (isset($products_details['delete'])) && ($products_details['delete'] == 'on') ) {
-         //check first to see if product should be deleted
+            //check first to see if product should be deleted
             //update quantities first
             if (STOCK_LIMITED == 'true'){
               tep_db_query("UPDATE " . TABLE_PRODUCTS . " SET
@@ -224,22 +192,23 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
                             WHERE products_id = '" . (int)$order_products['products_id'] . "'");
 // QT Pro Addon BOF
               if (ORDER_EDITOR_USE_QTPRO == 'true') {
-                $attrib_q = tep_db_query("select distinct op.products_id, po.products_options_id, pov.products_options_values_id
-                                          from products_options po, products_options_values pov, products_options_values_to_products_options po2pov, orders_products_attributes opa, orders_products op
-                                          where op.orders_id = '" . $oID . "'
-                                          and op.orders_products_id = '" . $orders_products_id . "'
-                                          and products_options_values_name = opa.products_options_values
-                                          and pov.products_options_values_id = po2pov.products_options_values_id
-                                          and po.products_options_id = po2pov.products_options_id
-                                          and products_options_name = opa.products_options");
+                $attrib_q = tep_db_query("SELECT DISTINCT op.products_id, po.products_options_id, pov.products_options_values_id
+                                          FROM products_options po, products_options_values pov, products_options_values_to_products_options po2pov, orders_products_attributes opa, orders_products op
+                                          WHERE op.orders_id = '" . $oID . "'
+                                          AND op.orders_products_id = '" . $orders_products_id . "'
+                                          AND products_options_values_name = opa.products_options_values
+                                          AND pov.products_options_values_id = po2pov.products_options_values_id
+                                          AND po.products_options_id = po2pov.products_options_id
+                                          AND products_options_name = opa.products_options");
                 while($attrib_set = tep_db_fetch_array($attrib_q)) {
                   // corresponding to each option find the attribute ids ( opts and values id )
+
                   $products_stock_attributes[] = $attrib_set['products_options_id'].'-'.$attrib_set['products_options_values_id'];
                 }
                 sort($products_stock_attributes, SORT_NUMERIC); // Same sort as QT Pro stock
                 $products_stock_attributes = implode($products_stock_attributes, ',');
                  // update the stock
-                 tep_db_query("update ".TABLE_PRODUCTS_STOCK." set products_stock_quantity = products_stock_quantity + ".$products_details["qty"] . " where products_id= '" . $order_products['products_id'] . "' and products_stock_attributes='".$products_stock_attributes."'");
+                 tep_db_query("UPDATE " . TABLE_PRODUCTS_STOCK . " SET products_stock_quantity = products_stock_quantity + " . $products_details["qty"] . " WHERE products_id= '" . $order_products['products_id'] . "' and products_stock_attributes='".$products_stock_attributes."'");
               }
 // QT Pro Addon EOF
             } else {
@@ -249,16 +218,16 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
             }
 
             tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS . "
-                          WHERE orders_id = '" . (int)$oID . "'
+                          WHERE orders_id = '" . $oID . "'
                           AND orders_products_id = '" . (int)$orders_products_id . "'");
 
-            tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . "
-                          WHERE orders_id = '" . (int)$oID . "'
-                          AND orders_products_id = '" . (int)$orders_products_id . "'");
+              tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . "
+                            WHERE orders_id = '" . $oID . "'
+                            AND orders_products_id = '" . (int)$orders_products_id . "'");
 
-            tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . "
-                          WHERE orders_id = '" . (int)$oID . "'
-                          AND orders_products_id = '" . (int)$orders_products_id . "'");
+              tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . "
+                            WHERE orders_id = '" . $oID . "'
+                            AND orders_products_id = '" . (int)$orders_products_id . "'");
           } else {
          //not deleted=> updated
             // Update orders_products Table
@@ -326,21 +295,24 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
 //////////////////////
 // Set shipping module
 //////////////////////
-      $shipping = array();
 
+// reload_totals.php begins
+// comparar con ese archivo
+// Parece que incluye parches
+      $shipping = array();
       if (is_array($_POST['update_totals'])) {
         foreach($_POST['update_totals'] as $total_index => $total_details) {
           extract($total_details, EXTR_PREFIX_ALL, "ot");
           if ($ot_class == "ot_shipping") {
-               $shipping['cost'] = $ot_value;
-               $shipping['title'] = $ot_title;
-               $shipping['id'] = $ot_id;
+            $shipping['cost'] = $ot_value;
+            $shipping['title'] = $ot_title;
+            $shipping['id'] = $ot_id;
           } // end if ($ot_class == "ot_shipping")
         } //end foreach
       } //end if is_array
 
       if (tep_not_null($shipping['id'])) {
-        tep_db_query("UPDATE " . TABLE_ORDERS . " SET shipping_module = '" . $shipping['id'] . "' WHERE orders_id = '" . (int)$oID . "'");
+        tep_db_query("UPDATE " . TABLE_ORDERS . " SET shipping_module = '" . $shipping['id'] . "' WHERE orders_id = '" . $oID . "'");
       }
 
       $order = new manualOrder($oID);
@@ -368,13 +340,16 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
       $order_totals = $order_total_modules->process();
       $current_ot_totals_array = array();
       $current_ot_titles_array = array();
-      $current_ot_totals_query = tep_db_query("select class, title from " . TABLE_ORDERS_TOTAL . " where orders_id = '" . (int)$oID . "' order by sort_order");
+      $written_ot_totals_array = array();
+      $written_ot_titles_array = array();
+        //how many weird arrays can I make today?
+      $current_ot_totals_query = tep_db_query("select class, title from " . TABLE_ORDERS_TOTAL . " where orders_id = '" . $oID . "' order by sort_order");
       while ($current_ot_totals = tep_db_fetch_array($current_ot_totals_query)) {
         $current_ot_totals_array[] = $current_ot_totals['class'];
         $current_ot_titles_array[] = $current_ot_totals['title'];
       }
 
-      tep_db_query("DELETE FROM " . TABLE_ORDERS_TOTAL . " WHERE orders_id = '" . (int)$oID . "'");
+      tep_db_query("DELETE FROM " . TABLE_ORDERS_TOTAL . " WHERE orders_id = '" . $oID . "'");
 
       $j=1; //giving something a sort order of 0 ain't my bag baby
       $new_order_totals = array();
@@ -389,6 +364,7 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
               } else { //within 5
                 $new_ot_total = ((in_array($order_totals[$i]['code'], $current_ot_totals_array)) ? false : true);
               }  //end 5 if ($order_totals[$i]['code'] == 'ot_tax')
+
               if ( ( ($order_totals[$i]['code'] == 'ot_tax') && ($order_totals[$i]['code'] == $ot_class) && ($order_totals[$i]['title'] == $ot_title) ) || ( ($order_totals[$i]['code'] != 'ot_tax') && ($order_totals[$i]['code'] == $ot_class) ) ) { //6
               //only good for components that show up in the $order_totals array
                 if ($ot_title != '') { //7
@@ -405,6 +381,7 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
                   $written_ot_totals_array[] = $ot_class;
                   $written_ot_titles_array[] = $ot_title;
                 } //end 7
+
               } elseif ( ($new_ot_total) && (!in_array($order_totals[$i]['title'], $current_ot_titles_array)) ) { //within 6
                 $new_order_totals[] = array('title' => $order_totals[$i]['title'],
                                             'text' => $order_totals[$i]['text'],
@@ -431,6 +408,7 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
                                         'code' => 'ot_custom_' . $j,
                                         'sort_order' => $j);
             $order->info['total'] += $ot_value;
+
             $written_ot_totals_array[] = $ot_class;
             $written_ot_titles_array[] = $ot_title;
             $j++;
@@ -449,6 +427,7 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
             $written_ot_totals_array[] = $ot_class;
             $written_ot_titles_array[] = $ot_title;
             $j++;
+
           } //end 7
         } //end 2
       } else {//within 1
@@ -460,12 +439,14 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
                                       'code' => $order_totals[$i]['code'],
                                       'sort_order' => $j);
           $j++;
+
         } //end 8
+
       } //end if (is_array($_POST['update_totals'])) { //1
 
       for ($i=0, $n=sizeof($new_order_totals); $i<$n; $i++) {
         $sql_data_array = array('orders_id' => $oID,
-                                'title' => $new_order_totals[$i]['title'],
+                                'title' => oe_iconv($new_order_totals[$i]['title']),
                                 'text' => $new_order_totals[$i]['text'],
                                 'value' => $new_order_totals[$i]['value'],
                                 'class' => $new_order_totals[$i]['code'],
@@ -522,6 +503,8 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
         $total_count = $cart->count_contents();
         $total_weight = $cart->show_weight();
 
+// reload_totals.php end
+
         // Get the shipping quotes
         $shipping_modules = new shipping;
         $shipping_quotes = $shipping_modules->quote();
@@ -540,12 +523,12 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
   }
   require(DIR_WS_INCLUDES . 'template_top.php');
 
-  include('order_editor/css.php'); //because if you haven't got your css, what have you got?
+  require('order_editor/css.php'); //because if you haven't got your css, what have you got?
 ?>
 
 <script language="javascript" src="includes/general.js"></script>
 
-<?php include('order_editor/javascript.php'); //because if you haven't got your javascript, what have you got? ?>
+<?php require('order_editor/javascript.php'); //because if you haven't got your javascript, what have you got? ?>
 
 <!-- body //-->
 <table border="0" width="100%" cellspacing="2" cellpadding="2">
@@ -579,28 +562,28 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
             <!-- customer_info bof //-->
 <!-- probar float:left -->
         <div style="min-height:200px;float:left;display: inline-block;vertical-align: top;margin: 0.5em;">
-      <?php include ("order_editor/templates/customer_info.php");?>
+      <?php require ("order_editor/templates/customer_info.php");?>
         </div>
               <!-- customer_info_eof //-->
 
               <!-- shipping_address bof -->
         <div style="min-height:200px;float:left;display: inline-block;vertical-align: top;margin: 0.5em;">
-      <?php include ("order_editor/templates/shipping.php");?>
+      <?php require ("order_editor/templates/shipping.php");?>
         </div>
               <!-- shipping_address_eof //-->
                 <!-- billing_address bof //-->
         <div style="min-height:200px;float:left;display: inline-block;vertical-align: top;margin: 0.5em;">
-        <?php include ("order_editor/templates/billing.php");?>
+        <?php require ("order_editor/templates/billing.php");?>
         </div>
                 <!-- billing_address eof //-->
 
                 <!-- payment_method bof //-->
         <div style="float:left;display: inline-block;vertical-align: top;margin: 0.5em;">
-        <?php include ("order_editor/templates/payment_method.php");?>
+        <?php require ("order_editor/templates/payment_method.php");?>
         </div>
                 <!-- contact_information bof //-->
         <div style="float:left;display: inline-block;vertical-align: top;margin: 0.5em;">
-        <?php include ("order_editor/templates/contact_information.php");?>
+        <?php require ("order_editor/templates/contact_information.php");?>
         </div>
                 <!-- contact_information eof //-->
         </div>
@@ -722,7 +705,7 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
 ?>
         </table><!-- product_listing_eof //-->
         <div id="totalsBlock">
-<?php include ("order_editor/templates/totalsBlock.php");?>
+<?php require ("order_editor/templates/totalsBlock.php");?>
       </div>
     </div> <!-- this is end of the master div for the whole totals/shipping area -->
 
@@ -741,7 +724,7 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
         <?php echo tep_draw_separator('pixel_trans.gif', '1', '10'); ?>
     </div>
     <div id="commentsBlock">
-<?php include ("order_editor/templates/commentsBlock.php");?>
+<?php require ("order_editor/templates/commentsBlock.php");?>
 
   </div>
 
@@ -808,6 +791,10 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
 <?php
   require(DIR_WS_INCLUDES . 'template_bottom.php');
   require(DIR_WS_INCLUDES . 'application_bottom.php');
+  
+  
+  
+    
 ?>
   <script>
   $(function() {

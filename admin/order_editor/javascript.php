@@ -159,7 +159,7 @@ function updateCommentsField(action, id, status, value, info) {
   function setShipping(method) {
     if (document.getElementById("ot_shipping[title]")) {
 	document.getElementById("ot_shipping[title]").value = document.getElementById("update_shipping["+method+"][title]").value;
-    document.getElementById("ot_shipping[value]").value = document.getElementById("update_shipping["+method+"][value]").value;
+  document.getElementById("ot_shipping[value]").value = document.getElementById("update_shipping["+method+"][value]").value;
 	document.getElementById("ot_shipping[id]").value = document.getElementById("update_shipping["+method+"][id]").value;
 	obtainTotals();
 	}  else {

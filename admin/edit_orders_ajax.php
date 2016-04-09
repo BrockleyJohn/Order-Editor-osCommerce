@@ -12,22 +12,23 @@
   For Order Editor support or to post bug reports, feature requests, etc, please visit the Order Editor support thread:
   http://forums.oscommerce.com/index.php?showtopic=54032
 
-  */
+  Eliminados addons superfluos 31/03/2016 JMC
+
+*/
 
   require('includes/application_top.php');
 
   // output a response header
   header('Content-type: text/html; charset=' . CHARSET . '');
 
-  // include the appropriate functions & classes
-  include('order_editor/functions.php');
-  include('order_editor/cart.php');
-  include('order_editor/order.php');
-  include('order_editor/shipping.php');
-  include(DIR_WS_LANGUAGES . $language. '/' . 'edit_orders.php');
+  // require the appropriate functions & classes
+  require('order_editor/functions.php');
+  require('order_editor/manualcart.php');
+  require('order_editor/manualorder.php');
+  require('order_editor/shipping.php');
+  require(DIR_WS_LANGUAGES . $language. '/' . 'edit_orders.php');
 
-
-  // Include currencies class
+  // require currencies class
   require(DIR_WS_CLASSES . 'currencies.php');
   $currencies = new currencies();
 
@@ -37,8 +38,13 @@
     $action = $_GET['action'];
     $oID = (isset($_GET['oID']) ? tep_db_prepare_input($_GET['oID']) : '');
     $pID = (isset($_GET['pID']) ? tep_db_prepare_input($_GET['pID']) : '');
-
+    $status = (isset($_GET['status']) ? tep_db_prepare_input($_GET['status']) : '');
+    $comments = (isset($_GET['comments']) ? tep_db_prepare_input($_GET['comments']) : null);
+    $notify = (isset($_GET['notify']) ? tep_db_prepare_input($_GET['notify']) : null);
+    $notify_comments = (isset($_GET['notify_comments']) ? tep_db_prepare_input($_GET['notify_comments']) : null);
+    
   } elseif (sizeof($_POST) > 0) {
+
     $action = $_POST['action'];
     $oID = (isset($_POST['oID']) ? tep_db_prepare_input($_POST['oID']) : '');
    }
@@ -148,47 +154,49 @@
   //7.  Update most any field in the orders_products table
   if ($action == 'delete_product_field') {
 
-    //  Update Inventory Quantity
-    $order_query = tep_db_query("SELECT products_id, products_quantity
-                                 FROM " . TABLE_ORDERS_PRODUCTS . 
-                                " WHERE orders_id = '" . $oID . 
-                                "' AND orders_products_id = '" . $pID . "'");
+          //  Update Inventory Quantity
+          $order_query = tep_db_query("SELECT products_id, products_quantity
+                                       FROM " . TABLE_ORDERS_PRODUCTS . "
+                                       WHERE orders_id = '" . $oID . "'
+                                       AND orders_products_id = '" . $pID . "'");
     $order_products = tep_db_fetch_array($order_query);
-
-             //update quantities first
-    if (STOCK_LIMITED == 'true'){
-      tep_db_query("UPDATE " . TABLE_PRODUCTS . " SET
-                    products_quantity = products_quantity + " . $order_products['products_quantity'] . ",
-                    products_ordered = products_ordered - " . $order_products['products_quantity'] . "
-                    WHERE products_id = '" . (int)$order_products['products_id'] . "'");
+            //check first to see if product should be deleted
+            //update quantities first
+            if (STOCK_LIMITED == 'true'){
+              tep_db_query("UPDATE " . TABLE_PRODUCTS . " SET
+                            products_quantity = products_quantity + " . $order_products['products_quantity'] . ",
+                            products_ordered = products_ordered - " . $order_products['products_quantity'] . "
+                            WHERE products_id = '" . (int)$order_products['products_id'] . "'");
 // QT Pro Addon BOF
-               if (ORDER_EDITOR_USE_QTPRO == 'true') {
-                 $attrib_q = tep_db_query("SELECT DISTINCT op.products_id, po.products_options_id, pov.products_options_values_id
-                                           FROM products_options po, products_options_values pov, products_options_values_to_products_options po2pov, orders_products_attributes opa, orders_products op
-                                           WHERE op.orders_id = '" . $oID . "'
-                                           AND op.orders_products_id = '" . $pID . "'
-                                           AND products_options_values_name = opa.products_options_values
-                                           AND pov.products_options_values_id = po2pov.products_options_values_id
-                                           AND po.products_options_id = po2pov.products_options_id
-                                           AND products_options_name = opa.products_options");
-                  while($attrib_set = tep_db_fetch_array($attrib_q)) {
-                    $products_stock_attributes[] = $attrib_set['products_options_id'].'-'.$attrib_set['products_options_values_id'];
-                  }
-                  sort($products_stock_attributes, SORT_NUMERIC); // Same sort as QT Pro stock
-                  $products_stock_attributes = implode($products_stock_attributes, ',');
-                  // update the stock
-                  tep_db_query("UPDATE " . TABLE_PRODUCTS_STOCK . " SET products_stock_quantity = products_stock_quantity + ".$order['products_quantity'] . " WHERE products_id= '" . (int)$order_products['products_id'] . "' and products_stock_attributes='".$products_stock_attributes."'");
-                }
-// QT Pro Addon EOF
-              } else {
-                tep_db_query ("UPDATE " . TABLE_PRODUCTS . " SET
-                               products_ordered = products_ordered - " . $order_products['products_quantity'] . "
-                               WHERE products_id = '" . (int)$order_products['products_id'] . "'");
-              }
+              if (ORDER_EDITOR_USE_QTPRO == 'true') {
+                $attrib_q = tep_db_query("SELECT DISTINCT op.products_id, po.products_options_id, pov.products_options_values_id
+                                          FROM products_options po, products_options_values pov, products_options_values_to_products_options po2pov, orders_products_attributes opa, orders_products op
+                                          WHERE op.orders_id = '" . $oID . "'
+                                          AND op.orders_products_id = '" . $pID . "'
+                                          AND products_options_values_name = opa.products_options_values
+                                          AND pov.products_options_values_id = po2pov.products_options_values_id
+                                          AND po.products_options_id = po2pov.products_options_id
+                                          AND products_options_name = opa.products_options");
+                while($attrib_set = tep_db_fetch_array($attrib_q)) {
+                  // corresponding to each option find the attribute ids ( opts and values id )
 
-              tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS . "
-                            WHERE orders_id = '" . $oID . "'
-                            AND orders_products_id = '" . $pID . "'");
+                  $products_stock_attributes[] = $attrib_set['products_options_id'].'-'.$attrib_set['products_options_values_id'];
+                }
+                sort($products_stock_attributes, SORT_NUMERIC); // Same sort as QT Pro stock
+                $products_stock_attributes = implode($products_stock_attributes, ',');
+                 // update the stock
+                 tep_db_query("UPDATE " . TABLE_PRODUCTS_STOCK . " SET products_stock_quantity = products_stock_quantity + " . $order['products_quantity'] . " WHERE products_id= '" . $order_products['products_id'] . "' and products_stock_attributes='".$products_stock_attributes."'");
+              }
+// QT Pro Addon EOF
+            } else {
+              tep_db_query ("UPDATE " . TABLE_PRODUCTS . " SET
+                             products_ordered = products_ordered - " . $order_products['products_quantity'] . "
+                             WHERE products_id = '" . (int)$order_products['products_id'] . "'");
+            }
+
+            tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS . "
+                          WHERE orders_id = '" . $oID . "'
+                          AND orders_products_id = '" . $pID . "'");
 
               tep_db_query("DELETE FROM " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . "
                             WHERE orders_id = '" . $oID . "'
@@ -222,16 +230,16 @@
     if ($action == 'reload_totals') {
 
 // reload_totals.php begins
+// comparar con ese archivo
+// Parece que incluye parches
       $shipping = array();
       if (is_array($_POST['update_totals'])) {
         foreach($_POST['update_totals'] as $total_index => $total_details) {
           extract($total_details, EXTR_PREFIX_ALL, "ot");
           if ($ot_class == "ot_shipping") {
-
             $shipping['cost'] = $ot_value;
             $shipping['title'] = $ot_title;
             $shipping['id'] = $ot_id;
-
           } // end if ($ot_class == "ot_shipping")
         } //end foreach
       } //end if is_array
@@ -242,74 +250,69 @@
 
       $order = new manualOrder($oID);
       $order->adjust_zones();
-
       $cart = new manualCart();
       $cart->restore_contents($oID);
       $total_count = $cart->count_contents();
       $total_weight = $cart->show_weight();
-
-      // Get the shipping quotes- if we don't have shipping quotes shipping tax calculation can't happen
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// Get the shipping quotes- if we don't have shipping quotes shipping tax calculation can't happen
+//////////////////////////////////////////////////////////////////////////////////////////////////
       $shipping_modules = new shipping;
       $shipping_quotes = $shipping_modules->quote();
 
-        if (DISPLAY_PRICE_WITH_TAX == 'true') {//extract the base shipping cost or the ot_shipping module will add tax to it again
-          $module = substr($GLOBALS['shipping']['id'], 0, strpos($GLOBALS['shipping']['id'], '_'));
-          $tax = tep_get_tax_rate($GLOBALS[$module]->tax_class, $order->delivery['country']['id'], $order->delivery['zone_id']);
-          $order->info['total'] -= ( $order->info['shipping_cost'] - ($order->info['shipping_cost'] / (1 + ($tax /100))) );
-          $order->info['shipping_cost'] = ($order->info['shipping_cost'] / (1 + ($tax /100)));
-        }
+      if (DISPLAY_PRICE_WITH_TAX == 'true') {//extract the base shipping cost or the ot_shipping module will add tax to it again
+        $module = substr($GLOBALS['shipping']['id'], 0, strpos($GLOBALS['shipping']['id'], '_'));
+        $tax = tep_get_tax_rate($GLOBALS[$module]->tax_class, $order->delivery['country']['id'], $order->delivery['zone_id']);
+        $order->info['total'] -= ( $order->info['shipping_cost'] - ($order->info['shipping_cost'] / (1 + ($tax /100))) );
+        $order->info['shipping_cost'] = ($order->info['shipping_cost'] / (1 + ($tax /100)));
+      }
 
-        //this is where we call the order total modules
-        require( 'order_editor/order_total.php');
-        $order_total_modules = new order_total();
-        $order_totals = $order_total_modules->process();
-
-        $current_ot_totals_array = array();
-        $current_ot_titles_array = array();
-        $written_ot_totals_array = array();
-        $written_ot_titles_array = array();
+      //this is where we call the order total modules
+      require( 'order_editor/order_total.php');
+      $order_total_modules = new order_total();
+      $order_totals = $order_total_modules->process();
+      $current_ot_totals_array = array();
+      $current_ot_titles_array = array();
+      $written_ot_totals_array = array();
+      $written_ot_titles_array = array();
         //how many weird arrays can I make today?
-        $current_ot_totals_query = tep_db_query("select class, title from " . TABLE_ORDERS_TOTAL . " where orders_id = '" . $oID . "' order by sort_order");
-        while ($current_ot_totals = tep_db_fetch_array($current_ot_totals_query)) {
-          $current_ot_totals_array[] = $current_ot_totals['class'];
-          $current_ot_titles_array[] = $current_ot_totals['title'];
-        }
+      $current_ot_totals_query = tep_db_query("select class, title from " . TABLE_ORDERS_TOTAL . " where orders_id = '" . $oID . "' order by sort_order");
+      while ($current_ot_totals = tep_db_fetch_array($current_ot_totals_query)) {
+        $current_ot_totals_array[] = $current_ot_totals['class'];
+        $current_ot_titles_array[] = $current_ot_totals['title'];
+      }
 
-        tep_db_query("DELETE FROM " . TABLE_ORDERS_TOTAL . " WHERE orders_id = '" . $oID . "'");
+      tep_db_query("DELETE FROM " . TABLE_ORDERS_TOTAL . " WHERE orders_id = '" . $oID . "'");
 
-        $j=1; //giving something a sort order of 0 ain't my bag baby
-        $new_order_totals = array();
+      $j=1; //giving something a sort order of 0 ain't my bag baby
+      $new_order_totals = array();
 
-        if (is_array($_POST['update_totals'])) { //1
-          foreach($_POST['update_totals'] as $total_index => $total_details) { //2
-            extract($total_details, EXTR_PREFIX_ALL, "ot");
-            if (!strstr($ot_class, 'ot_custom')) { //3
-             for ($i=0, $n=sizeof($order_totals); $i<$n; $i++) { //4
+      if (is_array($_POST['update_totals'])) { //1
+        foreach($_POST['update_totals'] as $total_index => $total_details) { //2
+          extract($total_details, EXTR_PREFIX_ALL, "ot");
+          if (!strstr($ot_class, 'ot_custom')) { //3
+            for ($i=0, $n=sizeof($order_totals); $i<$n; $i++) { //4
+              if ($order_totals[$i]['code'] == 'ot_tax') { //5
+                $new_ot_total = ((in_array($order_totals[$i]['title'], $current_ot_titles_array)) ? false : true);
+              } else { //within 5
+                $new_ot_total = ((in_array($order_totals[$i]['code'], $current_ot_totals_array)) ? false : true);
+              }  //end 5 if ($order_totals[$i]['code'] == 'ot_tax')
 
-        if ($order_totals[$i]['code'] == 'ot_tax') { //5
-        $new_ot_total = ((in_array($order_totals[$i]['title'], $current_ot_titles_array)) ? false : true);
-        } else { //within 5
-        $new_ot_total = ((in_array($order_totals[$i]['code'], $current_ot_totals_array)) ? false : true);
-        }  //end 5 if ($order_totals[$i]['code'] == 'ot_tax')
-
-        if ( ( ($order_totals[$i]['code'] == 'ot_tax') && ($order_totals[$i]['code'] == $ot_class) && ($order_totals[$i]['title'] == $ot_title) ) || ( ($order_totals[$i]['code'] != 'ot_tax') && ($order_totals[$i]['code'] == $ot_class) ) ) { //6
-        //only good for components that show up in the $order_totals array
-
-        if ($ot_title != '') { //7
+              if ( ( ($order_totals[$i]['code'] == 'ot_tax') && ($order_totals[$i]['code'] == $ot_class) && ($order_totals[$i]['title'] == $ot_title) ) || ( ($order_totals[$i]['code'] != 'ot_tax') && ($order_totals[$i]['code'] == $ot_class) ) ) { //6
+              //only good for components that show up in the $order_totals array
+                if ($ot_title != '') { //7
                   $new_order_totals[] = array('title' => $ot_title,
                                               'text' => (($ot_class != 'ot_total') ? $order_totals[$i]['text'] : '<b>' . $currencies->format($order->info['total'], true, $order->info['currency'], $order->info['currency_value']) . '</b>'),
                                               'value' => (($order_totals[$i]['code'] != 'ot_total') ? $order_totals[$i]['value'] : $order->info['total']),
                                               'code' => $order_totals[$i]['code'],
                                               'sort_order' => $j);
-                $written_ot_totals_array[] = $ot_class;
-                $written_ot_titles_array[] = $ot_title;
-                $j++;
+                  $written_ot_totals_array[] = $ot_class;
+                  $written_ot_titles_array[] = $ot_title;
+                  $j++;
                 } else { //within 7
-
                   $order->info['total'] += ($ot_value*(-1));
                   $written_ot_totals_array[] = $ot_class;
                   $written_ot_titles_array[] = $ot_title;
-
                 } //end 7
 
               } elseif ( ($new_ot_total) && (!in_array($order_totals[$i]['title'], $current_ot_titles_array)) ) { //within 6
@@ -323,18 +326,17 @@
                 $written_ot_totals_array[] = $ot_class;
                 $written_ot_titles_array[] = $ot_title;
                 $j++;
-                // echo $order_totals[$i]['code'] . "<br>"; for debugging- use of this results in errors
-
+                //echo $order_totals[$i]['code'] . "<br>"; for debugging- use of this results in errors
               } elseif ($new_ot_total) { //also within 6
                 $order->info['total'] += ($order_totals[$i]['value']*(-1));
                 $current_ot_totals_array[] = $order_totals[$i]['code'];
                 $written_ot_totals_array[] = $ot_class;
                 $written_ot_titles_array[] = $ot_title;
               }//end 6
-           }//end 4
-         } elseif ( (tep_not_null($ot_value)) && (tep_not_null($ot_title)) ) { // this modifies if (!strstr($ot_class, 'ot_custom')) { //3
+            }//end 4
+          } elseif ( (tep_not_null($ot_value)) && (tep_not_null($ot_title)) ) { // this modifies if (!strstr($ot_class, 'ot_custom')) { //3
             $new_order_totals[] = array('title' => $ot_title,
-                     'text' => $currencies->format($ot_value, true, $order->info['currency'], $order->info['currency_value']),
+                                        'text' => $currencies->format($ot_value, true, $order->info['currency'], $order->info['currency_value']),
                                         'value' => $ot_value,
                                         'code' => 'ot_custom_' . $j,
                                         'sort_order' => $j);
@@ -345,46 +347,45 @@
             $j++;
           } //end 3
 
-            //save ot_skippy from certain annihilation
-             if ( (!in_array($ot_class, $written_ot_totals_array)) && (!in_array($ot_title, $written_ot_titles_array)) && (tep_not_null($ot_value)) && (tep_not_null($ot_title)) && ($ot_class != 'ot_tax') && ($ot_class != 'ot_loworderfee') ) { //7
-            //this is supposed to catch the oddball components that don't show up in $order_totals
-            $new_order_totals[] = array(
-                            'title' => $ot_title,
-                            'text' => $currencies->format($ot_value, true, $order->info['currency'], $order->info['currency_value']),
-                            'value' => $ot_value,
-                            'code' => $ot_class,
-                            'sort_order' => $j);
-               //$current_ot_totals_array[] = $order_totals[$i]['code'];
-                //$current_ot_titles_array[] = $order_totals[$i]['title'];
-                $written_ot_totals_array[] = $ot_class;
-                $written_ot_titles_array[] = $ot_title;
-                $j++;
+          //save ot_skippy from certain annihilation
+          if ( (!in_array($ot_class, $written_ot_totals_array)) && (!in_array($ot_title, $written_ot_titles_array)) && (tep_not_null($ot_value)) && (tep_not_null($ot_title)) && ($ot_class != 'ot_tax') && ($ot_class != 'ot_loworderfee') ) { //7
+          //this is supposed to catch the oddball components that don't show up in $order_totals
+            $new_order_totals[] = array('title' => $ot_title,
+                                        'text' => $currencies->format($ot_value, true, $order->info['currency'], $order->info['currency_value']),
+                                        'value' => $ot_value,
+                                        'code' => $ot_class,
+                                        'sort_order' => $j);
+            //$current_ot_totals_array[] = $order_totals[$i]['code'];
+            //$current_ot_titles_array[] = $order_totals[$i]['title'];
+            $written_ot_totals_array[] = $ot_class;
+            $written_ot_titles_array[] = $ot_title;
+            $j++;
 
           } //end 7
         } //end 2
       } else {//within 1
-      // $_POST['update_totals'] is not an array => write in all order total components that have been generated by the sundry modules
-       for ($i=0, $n=sizeof($order_totals); $i<$n; $i++) { //8
-         $new_order_totals[] = array('title' => $order_totals[$i]['title'],
-                                     'text' => $order_totals[$i]['text'],
-                                     'value' => $order_totals[$i]['value'],
-                                     'code' => $order_totals[$i]['code'],
-                                     'sort_order' => $j);
-                $j++;
+        // $_POST['update_totals'] is not an array => write in all order total components that have been generated by the sundry modules
+        for ($i=0, $n=sizeof($order_totals); $i<$n; $i++) { //8
+          $new_order_totals[] = array('title' => $order_totals[$i]['title'],
+                                      'text' => $order_totals[$i]['text'],
+                                      'value' => $order_totals[$i]['value'],
+                                      'code' => $order_totals[$i]['code'],
+                                      'sort_order' => $j);
+          $j++;
 
-      } //end 8
+        } //end 8
 
-    } //end if (is_array($_POST['update_totals'])) { //1
+      } //end if (is_array($_POST['update_totals'])) { //1
 
-        for ($i=0, $n=sizeof($new_order_totals); $i<$n; $i++) {
-          $sql_data_array = array('orders_id' => $oID,
-                                  'title' => oe_iconv($new_order_totals[$i]['title']),
-                                  'text' => $new_order_totals[$i]['text'],
-                                  'value' => $new_order_totals[$i]['value'],
-                                  'class' => $new_order_totals[$i]['code'],
-                                  'sort_order' => $new_order_totals[$i]['sort_order']);
-          tep_db_perform(TABLE_ORDERS_TOTAL, $sql_data_array);
-        }
+      for ($i=0, $n=sizeof($new_order_totals); $i<$n; $i++) {
+        $sql_data_array = array('orders_id' => $oID,
+                                'title' => oe_iconv($new_order_totals[$i]['title']),
+                                'text' => $new_order_totals[$i]['text'],
+                                'value' => $new_order_totals[$i]['value'],
+                                'class' => $new_order_totals[$i]['code'],
+                                'sort_order' => $new_order_totals[$i]['sort_order']);
+        tep_db_perform(TABLE_ORDERS_TOTAL, $sql_data_array);
+      }
 
 
         $order = new manualOrder($oID);
@@ -399,7 +400,7 @@
 // reload_totals.php end
 
       
-include ('order_editor/10.php');
+require ('order_editor/10.php');
 
 
 
@@ -421,45 +422,9 @@ include ('order_editor/10.php');
       $orders_status_array[$orders_status['orders_status_id']] = $orders_status['orders_status_name'];
     }
 
-  // UPDATE STATUS HISTORY & SEND EMAIL TO CUSTOMER IF NECESSARY #####
-    $check_status_query = tep_db_query("SELECT customers_name, customers_email_address, orders_status, date_purchased
-                                        FROM " . TABLE_ORDERS . "
-                                        WHERE orders_id = '" . $oID . "'");
-    $check_status = tep_db_fetch_array($check_status_query);
+     require ('order_editor/templates/update_status_history.php');
 
-    if (($check_status['orders_status'] != $_GET['status']) || (tep_not_null($_GET['comments']))) {
-      tep_db_query("UPDATE " . TABLE_ORDERS . " SET
-                    orders_status = '" . tep_db_input($_GET['status']) . "',
-                    last_modified = now()
-                    WHERE orders_id = '" . $oID . "'");
-
- // Notify Customer ?
-      $customer_notified = '0';
-      if (isset($_GET['notify']) && ($_GET['notify'] == 'true')) {
-        $notify_comments = '';
-        if (isset($_GET['notify_comments']) && ($_GET['notify_comments'] == 'true')) {
-          $notify_comments = sprintf(EMAIL_TEXT_COMMENTS_UPDATE, oe_iconv($_GET['comments'])) . "\n\n";
-        }
-        $email = STORE_NAME . "\n" .
-         EMAIL_SEPARATOR . "\n" .
-         EMAIL_TEXT_ORDER_NUMBER . ' ' . $oID . "\n" .
-         EMAIL_TEXT_INVOICE_URL . ' ' . tep_catalog_href_link(FILENAME_CATALOG_ACCOUNT_HISTORY_INFO, 'order_id=' . $oID, 'SSL') . "\n" .
-         EMAIL_TEXT_DATE_ORDERED . ' ' . tep_date_long($check_status['date_purchased']) . "\n\n" .
-         sprintf(EMAIL_TEXT_STATUS_UPDATE, $orders_status_array[$_GET['status']]) . $notify_comments . sprintf(EMAIL_TEXT_STATUS_UPDATE2);
-
-        tep_mail($check_status['customers_name'], $check_status['customers_email_address'], EMAIL_TEXT_SUBJECT, $email, STORE_OWNER, STORE_OWNER_EMAIL_ADDRESS);
-      $customer_notified = '1';
-      }
-
-      tep_db_query("INSERT into " . TABLE_ORDERS_STATUS_HISTORY . "
-                    (orders_id, orders_status_id, date_added, customer_notified, comments)
-                    values ('" . tep_db_input($oID) . "',
-                    '" . tep_db_input($_GET['status']) . "',
-                    now(),
-                    " . tep_db_input($customer_notified) . ",
-                    '" . oe_iconv($_GET['comments'])  . "')");
-    }
-     include ('order_editor/11.php');
+     require ('order_editor/11.php');
   }  // end if ($action == 'insert_new_comment') {
 
 
@@ -491,7 +456,7 @@ include ('order_editor/10.php');
     $shipping_modules = new shipping;
     $shipping_quotes = $shipping_modules->quote();
 
-    include ('order_editor/templates/totalsBlock.php');
+    require ('order_editor/templates/totalsBlock.php');
      
      
   } //end if ($action == 'insert_shipping') {
