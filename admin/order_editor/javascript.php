@@ -25,20 +25,20 @@ var xmlHttp = false;
   function rewriteDiv(field, stack) {
     if (stack == 'orders') {
       document.getElementById("ordersMessageStack").innerHTML ='<div class="messageStackSuccess"><td class="messageStackSuccess"><span style="float: left;" class="ui-icon ui-icon-lightbulb"></span><?php echo sprintf(AJAX_MESSAGE_STACK_SUCCESS, 'field'); ?></div>';
-      document.getElementById("productsMessageStack").innerHTML ='<?php echo tep_draw_separator('pixel_trans.gif', '1', '10'); ?>' ;
-      document.getElementById("historyMessageStack").innerHTML ='<?php echo tep_draw_separator('pixel_trans.gif', '1', '10'); ?>' ;
+      document.getElementById("productsMessageStack").innerHTML ='<br />' ;
+      document.getElementById("historyMessageStack").innerHTML ='<br />' ;
     }
     
     if (stack == 'products') {
       document.getElementById("productsMessageStack").innerHTML ='<div class="messageStackSuccess"><td class="messageStackSuccess"><span style="float: left;" class="ui-icon ui-icon-lightbulb"></span><?php echo sprintf(AJAX_MESSAGE_STACK_SUCCESS, 'field'); ?></div>';
-      document.getElementById("historyMessageStack").innerHTML ='<?php echo tep_draw_separator('pixel_trans.gif', '1', '10'); ?>' ;
-      document.getElementById("ordersMessageStack").innerHTML ='<?php echo tep_draw_separator('pixel_trans.gif', '1', '10'); ?>' ;
+      document.getElementById("historyMessageStack").innerHTML ='<br />' ;
+      document.getElementById("ordersMessageStack").innerHTML ='<br />' ;
     }
 
     if (stack == 'history') {
       document.getElementById("historyMessageStack").innerHTML ='<table><tr class="messageStackSuccess"><td class="messageStackSuccess"><td class="messageStackSuccess"><span style="float: left;" class="ui-icon ui-icon-lightbulb"></span><?php echo sprintf(AJAX_MESSAGE_STACK_SUCCESS, 'field'); ?></div>';
-      document.getElementById("ordersMessageStack").innerHTML ='<?php echo tep_draw_separator('pixel_trans.gif', '1', '10'); ?>' ;
-      document.getElementById("productsMessageStack").innerHTML ='<?php echo tep_draw_separator('pixel_trans.gif', '1', '10'); ?>' ;
+      document.getElementById("ordersMessageStack").innerHTML ='<br />' ;
+      document.getElementById("productsMessageStack").innerHTML ='<br />' ;
     }
   } //end function rewriteDiv
 
@@ -241,7 +241,7 @@ function updateCommentsField(action, id, status, value, info) {
 		  formdata += "oID=<?php echo $_GET['oID']; ?>"
 	 var url = "<?php echo 'edit_orders_ajax.php'; ?>";
 	  //hey- we're busy here
-	  document.getElementById("totalsBlock").innerHTML = '<div align="center"><img src="order_editor/images/working.gif"><br><?php echo AJAX_WORKING; ?><br></div>';
+	  document.getElementById("totalsBlock").innerHTML = '<div align="center"><img src="order_editor/images/loading.gif"><br><?php echo AJAX_WORKING; ?><br></div>';
 	  //if you do this before you loop the form the data will be lost
 	  xmlHttp.open("POST", url, true);//GET does not work with this data
 	  xmlHttp.onreadystatechange=

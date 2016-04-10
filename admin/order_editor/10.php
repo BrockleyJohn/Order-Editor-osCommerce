@@ -44,13 +44,14 @@
   }
 ?>
                 </td>
-
-        <!-- order_totals bof //-->
-                <td align="right" rowspan="2" valign="top" nowrap class="dataTableRow" style="border: 1px solid #C9C9C9;">
+                <!-- order_totals bof //-->
+                <br />
+                <td align="right" rowspan="2" valign="top" nowrap class="dataTableRow" style="border: 1px solid #C9C9C9;width:10%;">
                   <table cellspacing="0" cellpadding="2">
                     <tr class="dataTableHeadingRow">
-                      <td class="dataTableHeadingContent" width="15" colspan="2" nowrap title="<?= HINT_TOTALS ?>"><img src="images/icon_info.gif" border="0" width="13" height="13">
-                      <?= TABLE_HEADING_OT_TOTALS ?></td>
+                      <td class="dataTableHeadingContent" colspan="2">
+                      <span style="display:block;" title="<?= HINT_TOTALS ?>" id="icon-info-totals" class="ui-icon ui-icon-info ui-icon-white">
+                      </span><?= TABLE_HEADING_OT_TOTALS ?></td>
                       <td class="dataTableHeadingContent" colspan="2" nowrap><?= TABLE_HEADING_OT_VALUES ?></td>
                     </tr>
 <?php
@@ -77,13 +78,13 @@
 <?php
       if ($order->totals[$i]['class'] != 'ot_total') {
 ?>
-        <td class="dataTableContent" valign="middle" height="15">
-          <span id="update_totals[<?= $i ?>]">
-            <a href="javascript:setCustomOTVisibility('update_totals[<?= ($i+1) ?>]', 'visible', 'update_totals[<?= $i ?>]');">
-              <span title="<?= IMAGE_ADD_NEW_OT ?>" id="icon-add" class="ui-icon ui-icon-circle-plus"></span>
-            </a>
-          </span>
-        </td>
+                    <td class="dataTableContent" valign="middle" height="15">
+                      <span id="update_totals[<?= $i ?>]">
+                        <a href="javascript:setCustomOTVisibility('update_totals[<?= ($i+1) ?>]', 'visible', 'update_totals[<?= $i ?>]');">
+                          <span title="<?= IMAGE_ADD_NEW_OT ?>" id="icon-add" class="ui-icon ui-icon-circle-plus"></span>
+                        </a>
+                      </span>
+                    </td>
 <?php
       } else {
 ?>
@@ -110,7 +111,7 @@
                           <tr class="<?= $rowStyle ?>" id="update_totals[<?= $i ?>]" style="visibility: hidden; display: none;">
                             <td class="dataTableContent" valign="middle" height="15">
                               <a href='javascript:setCustomOTVisibility("update_totals[<?= $i ?>]", "hidden", "update_totals[<?= ($i-1) ?>]")'>
-                                <span title="<?= IMAGE_REMOVE_NEW_OT ?>" id="icon-remove" class="ui-icon ui-icon-circle-minus"></span>
+                                <span title="<?= IMAGE_REMOVE_NEW_OT ?>" id="icon-remove" class="ui-icon ui-icon-circle-minus ui-icon-red"></span>
                               </a>
                             </td>
 <?php

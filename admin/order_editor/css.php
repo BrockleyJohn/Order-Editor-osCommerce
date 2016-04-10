@@ -1,8 +1,19 @@
 <style type="text/css"><!--
 
-#icon-remove {
+.ui-icon-red {
 background-image: url('../ext/jquery/ui/redmond/images/ui-icons_cd0a0a_256x240.png');
 }
+.ui-icon-white {
+background-image: url('../ext/jquery/ui/redmond/images/ui-icons_469bdd_256x240.png');
+float:left;
+margin-right:5px;
+}
+.ui-icon-info {
+background-image: url('../ext/jquery/ui/redmond/images/ui-icons_469bdd_256x240.png');
+float:left;
+
+}
+
   .SubTitle {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 11px;

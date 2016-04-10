@@ -18,8 +18,8 @@
 
   // include the appropriate functions & classes
   include('order_editor/functions.php');
-  include('order_editor/cart.php');
-  include('order_editor/order.php');
+  include('order_editor/manualcart.php');
+  include('order_editor/manualorder.php');
   include(DIR_WS_LANGUAGES . $language. '/' . 'edit_orders.php');
 
   // Include currencies class

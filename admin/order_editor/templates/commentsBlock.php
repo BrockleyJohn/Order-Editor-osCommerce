@@ -21,8 +21,8 @@
           $r++;
           $rowClass = ((($r/2) == (floor($r/2))) ? 'dataTableRowOver' : 'dataTableRow');
 ?>
-      <tr class="<?= $rowClass ?>" id="commentRow<?= $orders_history['orders_status_history_id'] ?>" onmouseover="rowOverEffect(this)" onmouseout="rowOutEffect(this, \'<?= $rowClass ?>\')">
-        <td class="smallText" align="center"><div id="do_not_delete"><input name="update_comments[<?= $orders_history['orders_status_history_id'] ?>][delete]" type="checkbox" onClick="updateCommentsField(\'delete\', \'<?= $orders_history['orders_status_history_id'] ?>\', this.checked, \'\', this)"></div></td>
+      <tr class="<?= $rowClass ?>" id="commentRow<?= $orders_history['orders_status_history_id'] ?>" onmouseover="rowOverEffect(this)" onmouseout="rowOutEffect(this, '<?= $rowClass ?>')">
+        <td class="smallText" align="center"><div id="do_not_delete"><input name="update_comments[<?= $orders_history['orders_status_history_id'] ?>][delete]" type="checkbox" onClick="updateCommentsField('delete', '<?= $orders_history['orders_status_history_id'] ?>', this.checked, '', this)"></div></td>
         <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
         <td class="smallText" align="center"><?= tep_datetime_short($orders_history['date_added']) ?></td>
         <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
@@ -38,7 +38,7 @@
         <td class="smallText" align="left"><?= $orders_status_array[$orders_history['orders_status_id']] ?></td>
         <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
         <td class="smallText" align="left">
-          <?= tep_draw_textarea_field("update_comments[" . $orders_history['orders_status_history_id'] . "][comments]", "soft", "40", "5", "" .  tep_db_output($orders_history['comments']) . "", "onChange=\"updateCommentsField('update', '" . $orders_history['orders_status_history_id'] . "', 'false', encodeURIComponent(this.value))\"") ?>'
+          <?= tep_draw_textarea_field("update_comments[" . $orders_history['orders_status_history_id'] . "][comments]", "soft", "40", "5", "'" .  tep_db_output($orders_history['comments']) . "'", "onChange=\"updateCommentsField('update', '" . $orders_history['orders_status_history_id'] . "', 'false', encodeURIComponent(this.value))\"") ?>'
         </td>
       </tr>
 <?php

@@ -4,9 +4,13 @@
                 <td class="dataTableContent">
                 <table cellspacing="0" cellpadding="2" width="100%">
                   <tr class="dataTableHeadingRow">
-                    <td colspan="2" class="dataTableHeadingContent" valign="bottom" title="<?php echo HINT_UPDATE_TO_CC; ?>"><img src="images/icon_info.gif" border="0" width="13" height="13"> <?php echo ENTRY_PAYMENT_METHOD; ?></td>
+                    <td colspan="2" class="dataTableHeadingContent" valign="bottom">
+                    <span style="display:block;" title="<?= HINT_UPDATE_TO_CC ?>" id="icon-info-totals" class="ui-icon ui-icon-info ui-icon-white">
+                      </span><?= ENTRY_PAYMENT_METHOD ?></td>
                     <td></td>
-                    <td class="dataTableHeadingContent" valign="bottom" title="<?php echo oe_html_no_quote(HINT_UPDATE_CURRENCY);?>"><img src="images/icon_info.gif" border="0" width="13" height="13"> <?php echo ENTRY_CURRENCY_TYPE;?></td>
+                    <td class="dataTableHeadingContent" valign="bottom" title="<?= HINT_UPDATE_CURRENCY ?>">
+                    <span style="display:block;"  id="icon-info-curency" class="ui-icon ui-icon-info ui-icon-white">
+                      </span><?= ENTRY_CURRENCY_TYPE ?></td>
                     <td></td>
                     <td class="dataTableHeadingContent"><?php echo ENTRY_CURRENCY_VALUE; ?></td>
                   </tr>

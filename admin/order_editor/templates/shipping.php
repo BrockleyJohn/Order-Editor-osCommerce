@@ -1,6 +1,6 @@
           <table width="380" border="0" cellspacing="0" cellpadding="0" style="border: 1px solid #C9C9C9;">
             <tr class="dataTableHeadingRow">
-              <td colspan="4" class="dataTableHeadingContent" valign="top" title="<?php echo HINT_SHIPPING_ADDRESS;?>"><img src="images/icon_info.gif" border="0" width="13" height="13"> <?php echo ENTRY_SHIPPING_ADDRESS;?></td>
+              <td colspan="4" class="dataTableHeadingContent" valign="top" title="<?php echo HINT_SHIPPING_ADDRESS;?>"><span id="icon-info-shipping" class="ui-icon ui-icon-info ui-icon-white"></span><?php echo ENTRY_SHIPPING_ADDRESS;?></td>
             </tr>
             <tr id="shippingAddressEntry">
               <td class="dataTableContent">
