@@ -47,7 +47,7 @@
                 <!-- order_totals bof //-->
                 <br />
                 <td align="right" rowspan="2" valign="top" nowrap class="dataTableRow" style="border: 1px solid #C9C9C9;width:10%;">
-                  <table cellspacing="0" cellpadding="2">
+                  <table id="totals_table" cellspacing="0" cellpadding="2">
                     <tr class="dataTableHeadingRow">
                       <td class="dataTableHeadingContent" colspan="2">
                       <span style="display:block;" title="<?= HINT_TOTALS ?>" id="icon-info-totals" class="ui-icon ui-icon-info ui-icon-white">

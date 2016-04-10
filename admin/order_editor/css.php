@@ -1,5 +1,33 @@
 <style type="text/css"><!--
-
+#modal {
+    display: none;
+  position: fixed; /* or absolute */
+  top: 40%;
+  left: 50%;
+    width: 64px;
+    height: 64px;
+    padding:5px 2px 0px;
+    border: 6px solid #ababab;
+    box-shadow:1px 1px 10px #ababab;
+    border-radius:20px;
+    background-color: white;
+    z-index: 1002;
+    text-align:center;
+    overflow: auto;
+}
+#fade {
+    display: none;
+    position:absolute;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 1000%;
+    background-color: #ababab;
+    z-index: 1001;
+    -moz-opacity: 0.9;
+    opacity: .70;
+    filter: alpha(opacity=80);
+}
 .ui-icon-red {
 background-image: url('../ext/jquery/ui/redmond/images/ui-icons_cd0a0a_256x240.png');
 }

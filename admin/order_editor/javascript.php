@@ -48,6 +48,7 @@ var xmlHttp = false;
 
   function reloadDiv(div, data) {
     document.getElementById(div).innerHTML = data ;
+    closeModal();
   }
   
   function deleteRow(info, div) {
@@ -241,19 +242,21 @@ function updateCommentsField(action, id, status, value, info) {
 		  formdata += "oID=<?php echo $_GET['oID']; ?>"
 	 var url = "<?php echo 'edit_orders_ajax.php'; ?>";
 	  //hey- we're busy here
-	  document.getElementById("totalsBlock").innerHTML = '<div align="center"><img src="order_editor/images/loading.gif"><br><?php echo AJAX_WORKING; ?><br></div>';
+//	  document.getElementById("totalsBlock").innerHTML = '<div align="center"><img src="order_editor/images/loading.gif"><br><?php echo AJAX_WORKING; ?><br></div>';
+    openModal();
 	  //if you do this before you loop the form the data will be lost
 	  xmlHttp.open("POST", url, true);//GET does not work with this data
 	  xmlHttp.onreadystatechange=
               function(){if(xmlHttp.readyState!=4)return;if(xmlHttp.status==200){reloadDiv('totalsBlock', xmlHttp.responseText);}};
       xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xmlHttp.setRequestHeader("Content-length", formdata.length);
-      xmlHttp.setRequestHeader("Connection", "close");
+////////////////////////////////////      xmlHttp.setRequestHeader("Content-length", formdata.length);
+////////////////////////////////////      xmlHttp.setRequestHeader("Connection", "close");
       xmlHttp.send(formdata);
 
    }//end function obtainTotals() {
 
 ///begin standard JavaScript for edit_orders.php file
+// sin uso ini
    function setAddressVisibility(szDivID, checkID) {
      var obj = document.getElementById(szDivID);
       if (checkID.checked) {
@@ -269,7 +272,7 @@ function updateCommentsField(action, id, status, value, info) {
 		}//this should all just be obj.style.display = "table-row"; but IE is not standards compliant
       }
     }
-
+// sin uso fin
     function update_zone(countryID, zoneID, inputID, menuID) {
     var theForm = document.edit_order;
 	var NumState = theForm[countryID].options.length;
@@ -299,7 +302,7 @@ function updateCommentsField(action, id, status, value, info) {
      } //end function
 
   function openWindow(file, windowName) {
-    msgWindow = window.open(file, windowName,'top=250, left=250, width=550, height=450, location=0, status=1, toolbar=0, resize=1');
+    msgWindow = window.open(file, windowName,'top=250, left=250, width=550, height=450, location=0, status=0, toolbar=0, resize=1, menubar=0, titlebar=0');
     if (!msgWindow.opener) msgWindow.opener = self;
   }
 
@@ -523,4 +526,16 @@ function init()
     return s;
     } // end function doFormat
 //--></script>
+<script language="javascript" type="text/javascript"><!--
+function openModal() {
+        document.getElementById('modal').style.display = 'block';
+        document.getElementById('fade').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+    document.getElementById('fade').style.display = 'none';
+}
+//--></script>
+
 <?php ?>

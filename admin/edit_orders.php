@@ -340,7 +340,10 @@ $(function() {
     <div>
       <br />
     </div>
-
+    <div id="fade"></div>
+        <div id="modal">
+            <img id="loader" src="order_editor/images/loading.gif" />
+        </div>
     <!-- End of Status Block -->
 
 <?php
