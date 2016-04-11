@@ -7,29 +7,35 @@ TODO:
 - Admin module to install/uninstall and remove from main file
   Tablas a añadir para copiar datos:
 
+- Agregar productos en su idioma
+- Probar qué hace con los gastos de nevío al cambiar de país
 - QT pro options - check if everything works
 - Allow editing non-standard totals, maybe add option to choose what totals can be edited?
 en normal se puede, en ajax non-AJAX
-
-
+- añadir nota de que es necesario copiar la clase 'order_total.php' del catálogo al dir edit_orders
+- Ver si se puede cargar dinamicamente la lista de zonas
+- limitar input a numeros y puntos
+- dropdowns con +/- para precios de atributos
+- Estilos de tablas e inputs
 - Check if a order total can be auto calculated?
 - Check for newer fields on edge? ISBN?
 - Add to orders.php (standard and paypal vers.)
 - Rutina que compruebe si el cliente y biling es el mismo
 - Opción de reordenar totales y de añadir nuevos que no sean custom 
 - Centrar gif pensando
-
+- ver si se puede mandar parte del js a un archivo aparte
+- Eliminar shipping_class de la tabla orders si se elimina el metodo de envio
+- Permitir metodos de envio alternativos
 
 Clarificar el cambio de divisa
 BUGS
 ====
+
+- ¿borde inferior tabla totales recortado????
+- ver qué hace la función selectRowEffect!!!!!
 - Ver por qué ahora hace un reload despues de insertar comentarios (igual es por las cabeceras en JS)
 - Comprobar si funciona el email
 - Payment method and contact information doesn't show fixed width in chrome
-- Fix quotes inside new comments
-- Fix IE10/edge responsiveness
 - Cleanup styles, functions and jscript
 - Revisar eso de shipping same as billing
-- agrandar tooltips en Payment Method, currency y order total
-- payment method table has no borders
-- add cell borders below in product listing
+- agrandar tooltips en Payment Method, currency y order total. payment method table has no borders

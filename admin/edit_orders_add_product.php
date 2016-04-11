@@ -166,14 +166,14 @@
 		//add on for downloads
 		if (DOWNLOAD_ENABLED == 'true' && isset($filename[$option_id])) {
 		
-		$Query = "INSERT INTO " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . " SET
+		$query = "INSERT INTO " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . " SET
 				orders_id = '" . tep_db_prepare_input($oID) . "',
 				orders_products_id = '" . tep_db_prepare_input($new_product_id) . "',
 				orders_products_filename = '" . tep_db_prepare_input($filename[$option_id]) . "',
 				download_maxdays = '" . tep_db_prepare_input($maxdays[$option_id]) . "',
 	            download_count = '" . tep_db_prepare_input($maxcount[$option_id]) . "'";
 						
-					tep_db_query($Query);
+					tep_db_query($query);
 					
        	} //end if (DOWNLOAD_ENABLED == 'true') {
 		//end downloads 

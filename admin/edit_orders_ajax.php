@@ -60,7 +60,7 @@
   if ($action == 'update_product_field') {
     if ($_GET['field'] == 'products_quantity') {
       $quantity = $_GET['new_value'];
-      require ('order_editor/2.php');
+      require ('order_editor/actions/remove_stock.php');
     }//end if ($_GET['field'] = 'products_quantity'
     tep_db_query("UPDATE " . TABLE_ORDERS_PRODUCTS . 
                  " SET " . $_GET['field'] . " = '" . oe_iconv($_GET['new_value']) . 
@@ -117,7 +117,7 @@
                                        AND orders_products_id = '" . $pID . "'");
           $order_products = tep_db_fetch_array($order_query);
           $quantity = $order_products['products_quantity'];
-	require ('order_editor/7.php');
+	require ('order_editor/actions/add_stock.php');
 
       //generate responseText
     echo TABLE_ORDERS_PRODUCTS;
@@ -201,14 +201,14 @@ require ('order_editor/templates/totals.php');
    if ($action == 'insert_shipping') {
 
     $order = new manualOrder($oID);
-    $Query = "INSERT INTO " . TABLE_ORDERS_TOTAL . " SET
+    $query = "INSERT INTO " . TABLE_ORDERS_TOTAL . " SET
               orders_id = '" . $oID . "',
               title = '" . $_GET['title'] . "',
               text = '" . $currencies->format($_GET['value'], true, $order->info['currency'], $order->info['currency_value']) ."',
               value = '" . $_GET['value'] . "',
               class = 'ot_shipping',
               sort_order = '" . $_GET['sort_order'] . "'";
-    tep_db_query($Query);
+    tep_db_query($query);
 
     tep_db_query("UPDATE " . TABLE_ORDERS . 
                  " SET shipping_module = '" . $_GET['id'] . 

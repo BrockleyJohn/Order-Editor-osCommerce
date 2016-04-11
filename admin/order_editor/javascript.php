@@ -36,7 +36,7 @@ var xmlHttp = false;
     }
 
     if (stack == 'history') {
-      document.getElementById("historyMessageStack").innerHTML ='<table><tr class="messageStackSuccess"><td class="messageStackSuccess"><td class="messageStackSuccess"><span style="float: left;" class="ui-icon ui-icon-lightbulb"></span><?php echo sprintf(AJAX_MESSAGE_STACK_SUCCESS, 'field'); ?></div>';
+      document.getElementById("historyMessageStack").innerHTML ='<div class="messageStackSuccess"><td class="messageStackSuccess"><span style="float: left;" class="ui-icon ui-icon-lightbulb"></span><?php echo sprintf(AJAX_MESSAGE_STACK_SUCCESS, 'field'); ?></div>';
       document.getElementById("ordersMessageStack").innerHTML ='<br />' ;
       document.getElementById("productsMessageStack").innerHTML ='<br />' ;
     }
@@ -307,7 +307,7 @@ function updateCommentsField(action, id, status, value, info) {
   }
 
   function selectRowEffect(object, buttonSelect) {
-    document.getElementById("shipping_radio_" + buttonSelect).checked=true;
+//    document.getElementById("shipping_radio_" + buttonSelect).checked=true;
   }
 
   function rowOverEffect(object) {
