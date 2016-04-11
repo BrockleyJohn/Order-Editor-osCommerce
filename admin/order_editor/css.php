@@ -1,4 +1,11 @@
 <style type="text/css"><!--
+
+tr.border_bottom td {
+  border-bottom: 1px solid #B4B5B0;;
+}
+table { 
+    border-collapse: collapse; 
+}
 #modal {
     display: none;
   position: fixed; /* or absolute */
@@ -119,33 +126,7 @@ float:left;
    #header li {
    display: inline;
    }
-   
-   #customerInfoBlock {
-   position: relative;
-   top: 0;
-   left: 0;
-   width: 70%;
-   
-   
-   }
-   
-   
-   
-  #customerInfoBlock ul {
-  font-family: Verdana, Arial, sans-serif; 
-  font-size: 10px; color: #000000;
-  margin-left: 0;
-  padding-left: 0;
-  
-   }
-   
-   #customerInfoBlock li {
-   list-style-type: none;
-   display: table-row;
-   margin-top: 1;
-   padding: 0 0 0 5px;
-   
-   }
+
    
    #headerTitle {
    margin: auto;
@@ -161,33 +142,11 @@ float:left;
    clear: both;
    }
    
+
    
-   #dhtmltooltip {
-   position: absolute;
-   width: 300px;
-   border: 2px solid black;
-   padding: 2px;
-   background-color: lightyellow;
-   visibility: hidden;
-   z-index: 100;
-   }
-   
-    #infoLeftColumn {
-	top: 0;
-    left: 0;
-    float: left;
-	width: auto;
-	margin-right: 10px;
+
 	
-	
-	}
-	
-	#infoRightColumn {
-	width: auto;
-	margin-left: 10px;
-	
-	
-	}
+
 	
 <?php
   if ($order->customer['zone_id'] != '') {

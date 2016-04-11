@@ -9,6 +9,7 @@
           // First we do a stock check
           if ($quantity != $order_products['products_quantity']){
             $quantity_difference = ($quantity - $order_products['products_quantity']);
+            // removes stock
             if (STOCK_LIMITED == 'true'){
               tep_db_query("UPDATE " . TABLE_PRODUCTS . " SET
                             products_quantity = products_quantity - " . $quantity_difference . ",
@@ -33,7 +34,6 @@
                 sort($products_stock_attributes, SORT_NUMERIC); // Same sort as QT Pro stock
                 $products_stock_attributes = implode($products_stock_attributes, ',');
 
-                // update the stock
                 tep_db_query("UPDATE " . TABLE_PRODUCTS_STOCK . 
                              " SET products_stock_quantity = products_stock_quantity - ".$quantity_difference . 
                              " WHERE products_id= '" . $order_products['products_id'] . "' and products_stock_attributes='".$products_stock_attributes."'");

@@ -15,7 +15,7 @@
   if (sizeof($order->products)) {
     for ($i=0; $i<sizeof($order->products); $i++) {
       $pID = $order->products[$i]['orders_products_id'];  ?>
-          <tr class="dataTableRow">
+          <tr class="dataTableRow border_bottom">
             <td class="dataTableContent" valign="top"><div align="center"><input type="checkbox" name="<?php echo "update_products[" . $pID . "][delete]"; ?>" onClick="updateProductsField('delete', '<?php echo $pID; ?>', 'delete', this.checked, this)"></div></td>
             <td class="dataTableContent" valign="top"><div align=""><input type="tel" name="<?php echo "update_products[" . $pID . "][qty]"; ?>" size="2" onKeyUp="updatePrices('qty', '<?php echo $pID; ?>')" onChange="updateProductsField('reload1', '<?php echo $pID; ?>', 'products_quantity', encodeURIComponent(this.value))" value="<?php echo $order->products[$i]['qty']; ?>" id="<?php echo "update_products[" . $pID . "][qty]"; ?>"></div></td>
             <td class="dataTableContent" valign="top"><input name="<?php echo "update_products[" . $pID . "][name]"; ?>" size="50" onChange="updateProductsField('update', '<?php echo $pID; ?>', 'products_name', encodeURIComponent(this.value))" value='<?php echo oe_html_quotes($order->products[$i]['name']); ?>'>

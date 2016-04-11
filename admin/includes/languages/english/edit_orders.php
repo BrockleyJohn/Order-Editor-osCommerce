@@ -12,6 +12,8 @@
 
 define('HEADING_TITLE', 'Edit Order #%s of %s');
 define('ADDING_TITLE', 'Adding product(s) to Order #%s');
+define('CONTACT_INFORMATION', 'Conntact information');
+
 
 define('ENTRY_UPDATE_TO_CC', '(Update to ' . ORDER_EDITOR_CREDIT_CARD . ' to view CC fields.)');
 define('TABLE_HEADING_COMMENTS', 'Comments');

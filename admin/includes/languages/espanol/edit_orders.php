@@ -12,7 +12,7 @@
 
 define('HEADING_TITLE', 'Edit Order #%s of %s');
 define('ADDING_TITLE', 'Adding product(s) to Order #%s');
-
+define('CONTACT_INFORMATION', 'Conntact information');
 define('ENTRY_UPDATE_TO_CC', '(Update to ' . ORDER_EDITOR_CREDIT_CARD . ' to view CC fields.)');
 define('TABLE_HEADING_COMMENTS', 'Comments');
 define('TABLE_HEADING_STATUS', 'Status');
@@ -155,5 +155,3 @@ define('AJAX_NEW_ORDER_EMAIL', 'Are you sure you want to send a new order confir
 define('AJAX_INPUT_NEW_EMAIL_COMMENTS', 'Please input any comments you may have here.  It is ok to leave this blank if you do not wish to include comments.  Please remember as you type that hitting the "enter" key will result in submitting the comments as they appear.  It is not yet possible to include line breaks.');
 define('AJAX_SUCCESS_EMAIL_SENT', 'Success!  A new order confirmation email was sent to %s');
 define('AJAX_WORKING', 'Working, please wait....');
-
-?>

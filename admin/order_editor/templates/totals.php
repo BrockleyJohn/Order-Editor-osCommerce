@@ -49,10 +49,10 @@
                 <td align="right" rowspan="2" valign="top" nowrap class="dataTableRow" style="border: 1px solid #C9C9C9;width:10%;">
                   <table id="totals_table" cellspacing="0" cellpadding="2">
                     <tr class="dataTableHeadingRow">
-                      <td class="dataTableHeadingContent" colspan="2">
-                      <span style="display:block;" title="<?= HINT_TOTALS ?>" id="icon-info-totals" class="ui-icon ui-icon-info ui-icon-white">
-                      </span><?= TABLE_HEADING_OT_TOTALS ?></td>
-                      <td class="dataTableHeadingContent" colspan="2" nowrap><?= TABLE_HEADING_OT_VALUES ?></td>
+                      <th class="dataTableHeadingContent" colspan="2" title="<?= HINT_TOTALS ?>">
+                      <span style="display:block;" id="icon-info-totals" class="ui-icon ui-icon-info ui-icon-white">
+                      </span><?= TABLE_HEADING_OT_TOTALS ?></th>
+                      <th class="dataTableHeadingContent" colspan="2" nowrap><?= TABLE_HEADING_OT_VALUES ?></th>
                     </tr>
 <?php
   for ($i=0; $i<sizeof($order->totals); $i++) {
@@ -71,8 +71,12 @@
       } //end if ($order->totals[$i]['class'] == 'ot_shipping') {
 
     $rowStyle = (($i % 2) ? 'dataTableRowOver' : 'dataTableRow');
-///////////////////////////////	<!-- OJO ESTO CAMBIA EN TOTALSBLOCK!!! -->
-    if ((!strstr($order->totals[$i]['class'], 'ot_custom')) && ($order->totals[$i]['class'] != 'ot_shipping')) {
+
+// Here we could add an array of classes that can be modified by hand
+// or exclude the ones that can't (ot_subtotal, ot_total
+// You can also add a class to the if () sentence to allor
+// that class to be editable.
+    if (($order->totals[$i]['class'] == 'ot_total') || ($order->totals[$i]['class'] == 'ot_subtotal') || ($order->totals[$i]['class'] == 'ot_tax') || ($order->totals[$i]['class'] == 'ot_loworderfee') ) {
 ?>
                     <tr class="<?= $rowStyle ?>">
 <?php

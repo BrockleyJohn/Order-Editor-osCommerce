@@ -32,11 +32,9 @@
   require('order_editor/manualorder.php');
   require('order_editor/shipping.php');
   require(DIR_WS_LANGUAGES . $language. '/' . 'edit_orders.php');
-
-  // require currencies class
   require(DIR_WS_CLASSES . 'currencies.php');
   $currencies = new currencies();
-
+/*
  //orders status
   $orders_statuses = array();
   $orders_status_array = array();
@@ -50,6 +48,9 @@
 
     $orders_status_array[$orders_status['orders_status_id']] = $orders_status['orders_status_name'];
   }
+*/
+$orders_statuses = array();
+$orders_statuses = tep_get_orders_status();
 
 $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
 
@@ -62,6 +63,8 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
         $status = tep_db_prepare_input($_POST['status']);
 
         // Set this Session's variables
+        // check if it's useful or not
+        // most probably not
         if (isset($_POST['billing_same_as_customer'])) $_SESSION['billing_same_as_customer'] = $_POST['billing_same_as_customer'];
         if (isset($_POST['shipping_same_as_billing'])) $_SESSION['shipping_same_as_billing'] = $_POST['shipping_same_as_billing'];
         
@@ -82,8 +85,8 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
         $currency_value = tep_db_fetch_array($currency_value_query);
       
 
-        require ('order_editor/templates/update_orders_table.php');
-        require ('order_editor/templates/update_status_history.php');
+        require ('order_editor/actions/update_orders_table.php');
+        require ('order_editor/actions/update_status_history.php');
        
 //////////////////
 // Update Products
@@ -94,60 +97,55 @@ $action = (isset($_GET['action']) ? $_GET['action'] : 'edit');
 /// OJO AQUI DEFINE $products_details que no existe en ajax
 /// en ajax usa  $order_products
           foreach($_POST['update_products'] as $pID => $products_details) {
-          $quantity = $products_details['qty'];
-      require ('order_editor/2.php');
+            $quantity = $products_details['qty'];
+            require ('order_editor/2.php');
 
-  //7.
-          if ( (isset($products_details['delete'])) && ($products_details['delete'] == 'on') ) {
-// COMPROBAR SI YA EXISTE EL VALOR
-$quantity = $products_details['qty'];
+            if ( (isset($products_details['delete'])) && ($products_details['delete'] == 'on') ) {
+              require ('order_editor/7.php');
 
-require ('order_editor/7.php');
+            } else { //not deleted=> updated
+              // Update orders_products Table
+              $Query = "UPDATE " . TABLE_ORDERS_PRODUCTS . " SET
+                        products_model = '" . $products_details["model"] . "',
+                        products_name = '" . oe_html_quotes($products_details["name"]) . "',
+                        products_price = '" . $products_details["price"] . "',
+                        final_price = '" . $products_details["final_price"] . "',
+                        products_tax = '" . $products_details["tax"] . "',
+                        products_quantity = '" . $products_details["qty"] . "'
+                        WHERE orders_id = '" . (int)$oID . "'
+                        AND orders_products_id = '" . $pID . "';";
+              tep_db_query($Query);
 
-          } else {
-         //not deleted=> updated
-            // Update orders_products Table
-            $Query = "UPDATE " . TABLE_ORDERS_PRODUCTS . " SET
-                      products_model = '" . $products_details["model"] . "',
-                      products_name = '" . oe_html_quotes($products_details["name"]) . "',
-                      products_price = '" . $products_details["price"] . "',
-                      final_price = '" . $products_details["final_price"] . "',
-                      products_tax = '" . $products_details["tax"] . "',
-                      products_quantity = '" . $products_details["qty"] . "'
-                      WHERE orders_id = '" . (int)$oID . "'
-                      AND orders_products_id = '" . $pID . "';";
-            tep_db_query($Query);
-
-            // Update Any Attributes
-            if(isset($products_details['attributes'])) {
-              foreach($products_details['attributes'] as $orders_products_attributes_id => $attributes_details) {
-                $Query = "UPDATE " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . " set
-                          products_options = '" . $attributes_details["option"] . "',
-                          products_options_values = '" . $attributes_details["value"] . "',
-                          options_values_price ='" . $attributes_details["price"] . "',
-                          price_prefix ='" . $attributes_details["prefix"] . "'
-                          where orders_products_attributes_id = '$orders_products_attributes_id';";
-                tep_db_query($Query);
-              }//end of foreach($products_details["attributes"]
-            }// end of if(isset($products_details[attributes]))
-          } //end if/else product details delete= on
-        } //end foreach post update products
-      }//end if is-array update products
+              // Update Any Attributes
+              if(isset($products_details['attributes'])) {
+                foreach($products_details['attributes'] as $orders_products_attributes_id => $attributes_details) {
+                  $Query = "UPDATE " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . " set
+                            products_options = '" . $attributes_details["option"] . "',
+                            products_options_values = '" . $attributes_details["value"] . "',
+                            options_values_price ='" . $attributes_details["price"] . "',
+                            price_prefix ='" . $attributes_details["prefix"] . "'
+                            where orders_products_attributes_id = '$orders_products_attributes_id';";
+                  tep_db_query($Query);
+                }//end of foreach($products_details["attributes"]
+              }// end of if(isset($products_details[attributes]))
+            } //end if/else product details delete= on
+          } //end foreach post update products
+        }//end if is-array update products
 
 ////////////////////////////
 //update downloads if exists
 ////////////////////////////
-      if (is_array($_POST['update_downloads'])) {
-        foreach($_POST['update_downloads'] as $orders_products_download_id => $download_details) {
-          $Query = "UPDATE " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . " SET
-                    orders_products_filename = '" . $download_details["filename"] . "',
-                    download_maxdays = '" . $download_details["maxdays"] . "',
-                    download_count = '" . $download_details["maxcount"] . "'
-                    WHERE orders_id = '" . (int)$oID . "'
-                    AND orders_products_download_id = '$orders_products_download_id';";
-          tep_db_query($Query);
-        }
-      } //end downloads
+        if (is_array($_POST['update_downloads'])) {
+          foreach($_POST['update_downloads'] as $orders_products_download_id => $download_details) {
+            $Query = "UPDATE " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . " SET
+                      orders_products_filename = '" . $download_details["filename"] . "',
+                      download_maxdays = '" . $download_details["maxdays"] . "',
+                      download_count = '" . $download_details["maxcount"] . "'
+                      WHERE orders_id = '" . (int)$oID . "'
+                      AND orders_products_download_id = '$orders_products_download_id';";
+            tep_db_query($Query);
+          }
+        } //end downloads
 
 ///////////////////////////
 //delete or update comments
@@ -172,7 +170,7 @@ require ('order_editor/7.php');
 // Set shipping module
 //////////////////////
 
-require ("order_editor/templates/reload_totals.php");
+require ("order_editor/actions/reload_totals.php");
 
 
       if (isset($_POST['subaction'])) {
@@ -314,7 +312,7 @@ $(function() {
       </div>
         <!-- product_listing_eof //-->
       <div id="totalsBlock">
-        <?php require ("order_editor/templates/totalsBlock.php");?>
+        <?php require ("order_editor/templates/totals.php");?>
       </div>
     </div> <!-- this is end of the master div for the whole totals/shipping area -->
 

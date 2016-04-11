@@ -27,8 +27,6 @@
   require('order_editor/manualorder.php');
   require('order_editor/shipping.php');
   require(DIR_WS_LANGUAGES . $language. '/' . 'edit_orders.php');
-
-  // require currencies class
   require(DIR_WS_CLASSES . 'currencies.php');
   $currencies = new currencies();
 
@@ -167,7 +165,7 @@
   //10. Reload the shipping and order totals block
     if ($action == 'reload_totals') {
 
-require ("order_editor/templates/reload_totals.php");
+require ("order_editor/actions/reload_totals.php");
 
         $order = new manualOrder($oID);
         $shippingKey = $order->adjust_totals($oID);
@@ -181,7 +179,7 @@ require ("order_editor/templates/reload_totals.php");
 // reload_totals.php end
 
       
-require ('order_editor/10.php');
+require ('order_editor/templates/totals.php');
 
 
 
@@ -192,18 +190,9 @@ require ('order_editor/10.php');
    if ($action == 'insert_new_comment') {
     //orders status
     $orders_statuses = array();
-    $orders_status_array = array();
-    $orders_status_query = tep_db_query("SELECT orders_status_id, orders_status_name
-                                         FROM " . TABLE_ORDERS_STATUS . "
-                                         WHERE language_id = '" . (int)$languages_id . "'");
+    $orders_statuses = tep_get_orders_status();
 
-    while ($orders_status = tep_db_fetch_array($orders_status_query)) {
-      $orders_statuses[] = array('id' => $orders_status['orders_status_id'],
-                                 'text' => $orders_status['orders_status_name']);
-      $orders_status_array[$orders_status['orders_status_id']] = $orders_status['orders_status_name'];
-    }
-
-     require ('order_editor/templates/update_status_history.php');
+     require ('order_editor/actions/update_status_history.php');
      require ('order_editor/templates/commentsBlock.php');
   }  // end if ($action == 'insert_new_comment') {
 
@@ -238,7 +227,7 @@ require ('order_editor/10.php');
     $shipping_modules = new shipping;
     $shipping_quotes = $shipping_modules->quote();
 
-    require ('order_editor/templates/totalsBlock.php');
+    require ('order_editor/templates/totals.php');
      
      
   } //end if ($action == 'insert_shipping') {
@@ -248,6 +237,6 @@ require ('order_editor/10.php');
 
   if ($action == 'new_order_email')  {
 
-    require ('order_editor/templates/new_order_email.php');
+    require ('order_editor/actions/new_order_email.php');
 
   } //end if ($action == 'new_order_email') {
