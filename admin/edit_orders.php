@@ -311,17 +311,14 @@ $(function() {
     </div>
 
 
-    <div id="historyMessageStack"  style="float:left;width:100%;clear:both;"><br /></div>
-    <div id="commentsBlock">
+    <div id="historyMessageStack" style="float:left;width:100%;clear:both;"><br /></div>
+    
+    <div id="commentsBlock" style="float:left;vertical-align:top; margin-right:5px;">
       <?php require ("order_editor/templates/commentsBlock.php");?>
     </div>
 
 
-    <div>
-      <?php echo tep_draw_separator('pixel_trans.gif', '1', '1'); ?>
-    </div>
-    <br>
-    <div id="updateStatusBlock">
+    <div id="updateStatusBlock" style="float:left;vertical-align: top;">
       <?php require ("order_editor/templates/updateStatusBlock.php");?>
     </div>
     <div>

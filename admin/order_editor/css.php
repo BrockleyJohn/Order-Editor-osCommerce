@@ -1,5 +1,60 @@
 <style type="text/css"><!--
 
+/* data table from stylesheet
+.dataTableHeadingRow { background-color: #C9C9C9; }
+.dataTableHeadingContent { color: #ffffff; font-weight: bold; }
+.dataTableRow { background-color: #F0F1F1; }
+.dataTableRowSelected { background-color: #DEE4E8; }
+.dataTableRowOver { background-color: #FFFFFF; cursor: pointer; cursor: hand; }
+.dataTableContent { color: #000000; }
+*/
+table {
+    border-top-left-radius: 15px;
+
+}
+
+input {
+  border-width: 1px;
+    border-color:transparent;
+/*    border: hidden; */
+  
+}
+
+input:hover {
+  border-width: 1px;
+/*  border: solid; */
+  border-color:orange;
+  
+}
+
+
+
+.dataTableHeadingRow {
+/*  border: 6px solid #4297d7; */
+  background-color: #5c9ccc ;
+  
+  table {
+        border-collapse: separate;
+        background-clip: padding-box;
+    background-color: #369;
+        border: 5px solid red;
+    border-radius: 5px;
+  }
+  
+}
+.dataTableHeadingContent {
+  /* no va? */border-radius: 5px;background-clip: padding-box;
+}
+
+.rowOver tr:hover { 
+  background: #DEE4E8;
+}
+
+#shipping_quote tr:hover { 
+
+  cursor:pointer;
+  }
+
 tr.border_bottom td {
   border-bottom: 1px solid #B4B5B0;;
 }
@@ -44,7 +99,7 @@ float:left;
 margin-right:5px;
 }
 .ui-icon-info {
-background-image: url('../ext/jquery/ui/redmond/images/ui-icons_469bdd_256x240.png');
+background-image: url('../ext/jquery/ui/redmond/images/ui-icons_d8e7f3_256x240.png');
 float:left;
 
 }

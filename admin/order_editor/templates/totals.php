@@ -8,18 +8,21 @@
 ?>
                 <!-- shipping_quote bof //-->
                 <table border="0" width="550" cellspacing="0" cellpadding="2" style="border: 1px solid #C9C9C9;">
+                  <thead>
                   <tr class="dataTableHeadingRow">
-                    <td class="dataTableHeadingContent" colspan="3"><?= TABLE_HEADING_SHIPPING_QUOTES ?></td>
+                    <th class="dataTableHeadingContent" colspan="3"><?= TABLE_HEADING_SHIPPING_QUOTES ?></th>
                   </tr>
+                  <thead>
 <?php
     $r = 0;
     for ($i=0, $n=sizeof($shipping_quotes); $i<$n; $i++) {
       for ($j=0, $n2=sizeof($shipping_quotes[$i]['methods']); $j<$n2; $j++) {
         $r++;
         if (!isset($shipping_quotes[$i]['tax'])) $shipping_quotes[$i]['tax'] = 0;
-        $rowClass = ((($r/2) == (floor($r/2))) ? 'dataTableRowOver' : 'dataTableRow');
+//        $rowClass = ((($r/2) == (floor($r/2))) ? 'dataTableRowOver' : 'dataTableRow');
 ?>
-                  <tr class="<?= $rowClass ?>" onmouseover="rowOverEffect(this)" onmouseout="rowOutEffect(this, '<?= $rowClass ?>')" onClick="selectRowEffect(this, <?= $r ?>); setShipping(<?= $r ?>);">
+                  <tbody class="rowOver" id= "shipping_quote">
+                  <tr class="dataTableRow" onClick="selectRowEffect(this, <?= $r ?>); setShipping(<?= $r ?>);">
                     <td class="dataTableContent" valign="top" align="left" width="15px">
                       <input type="radio" name="shipping" id="shipping_radio_<?= $r ?>" value="<?= $shipping_quotes[$i]['id'] ?>_<?= $shipping_quotes[$i]['methods'][$j]['id'] ?>">
                       <input type="hidden" id="update_shipping[<?= $r ?>][title]" name="update_shipping[<?= $r ?>][title]" value="<?= $shipping_quotes[$i]['module'] ?> (<?= $shipping_quotes[$i]['methods'][$j]['title'] ?>):">
@@ -29,13 +32,16 @@
                     <td class="dataTableContent" valign="top"><?= $shipping_quotes[$i]['module'] ?> (<?= $shipping_quotes[$i]['methods'][$j]['title'] ?>):</td>
                     <td class="dataTableContent" align="right"><?= $currencies->format(tep_add_tax($shipping_quotes[$i]['methods'][$j]['cost'], $shipping_quotes[$i]['tax']), true, $order->info['currency'], $order->info['currency_value']) ?></td>
                   </tr>
+                  </tbody>
 <?php
       }
     }
 ?>
+                  <tfoot>
                   <tr class="dataTableHeadingRow">
                     <td class="dataTableHeadingContent" colspan="3"><?= sprintf(TEXT_PACKAGE_WEIGHT_COUNT, $shipping_num_boxes . ' x ' . $shipping_weight, $total_count) ?></td>
                   </tr>
+                   </tfoot>
                 </table>
                 <!-- shipping_quote_eof //-->
 <?php

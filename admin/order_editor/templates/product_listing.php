@@ -1,6 +1,7 @@
         <table border="0" width="100%" cellspacing="0" cellpadding="2" id="productsTable">
+          <thead>
           <tr class="dataTableHeadingRow">
-            <td class="dataTableHeadingContent"><div align="center"><?php echo TABLE_HEADING_DELETE; ?></div></td>
+            <th class="dataTableHeadingContent"><div align="center"><?php echo TABLE_HEADING_DELETE; ?></div></td>
             <td class="dataTableHeadingContent"><div align="center"><?php echo TABLE_HEADING_QUANTITY; ?></div></td>
             <td class="dataTableHeadingContent"><?php echo TABLE_HEADING_PRODUCTS; ?></td>
             <td class="dataTableHeadingContent"><?php echo TABLE_HEADING_PRODUCTS_MODEL; ?></td>
@@ -11,8 +12,12 @@
             <td class="dataTableHeadingContent" align="center" title="<?php echo HINT_TOTAL_EXCL;?>"><span id="icon-info-curency" class="ui-icon ui-icon-info ui-icon-info"></span><?php echo TABLE_HEADING_TOTAL_PRICE;?></td>
             <td class="dataTableHeadingContent" align="center" title="<?php echo HINT_TOTAL_INCL;?>"><span id="icon-info-curency" class="ui-icon ui-icon-info ui-icon-info"></span><?php echo TABLE_HEADING_TOTAL_PRICE_TAXED;?></td>
           </tr>
+          </thead>
 <?php
   if (sizeof($order->products)) {
+?>
+          <tbody class="rowOver">
+<?php
     for ($i=0; $i<sizeof($order->products); $i++) {
       $pID = $order->products[$i]['orders_products_id'];  ?>
           <tr class="dataTableRow border_bottom">
@@ -24,7 +29,11 @@
      if (isset($order->products[$i]['attributes']) && (sizeof($order->products[$i]['attributes']) > 0)) {
         for ($j=0; $j<sizeof($order->products[$i]['attributes']); $j++) {
           $orders_products_attributes_id = $order->products[$i]['attributes'][$j]['orders_products_attributes_id'];
-                echo '<br><nobr><small>&nbsp;<i> - ' . "<input name='update_products[$pID][attributes][$orders_products_attributes_id][option]' size='6' value='" . oe_html_quotes($order->products[$i]['attributes'][$j]['option']) . "' onChange=\"updateAttributesField('simple', 'products_options', '" . $orders_products_attributes_id . "', '" . $pID . "', encodeURIComponent(this.value))\">" . ': ' . "<input name='update_products[$pID][attributes][$orders_products_attributes_id][value]' size='10' value='" . oe_html_quotes($order->products[$i]['attributes'][$j]['value']) . "' onChange=\"updateAttributesField('simple', 'products_options_values', '" . $orders_products_attributes_id . "', '" . $pID . "', encodeURIComponent(this.value))\">" . ': ' . "</i><input name='update_products[$pID][attributes][$orders_products_attributes_id][prefix]' size='1' id='p" . $pID . "_" . $orders_products_attributes_id . "_prefix' value='" . $order->products[$i]['attributes'][$j]['prefix'] . "' onKeyUp=\"updatePrices('att_price', '" . $pID . "')\" onChange=\"updateAttributesField('hard', 'price_prefix', '" . $orders_products_attributes_id . "', '" . $pID . "', encodeURIComponent(this.value))\">" . ': ' . "<input name='update_products[$pID][attributes][$orders_products_attributes_id][price]' size='7' value='" . $order->products[$i]['attributes'][$j]['price'] . "' onKeyUp=\"updatePrices('att_price', '" . $pID . "')\" onChange=\"updateAttributesField('hard', 'options_values_price', '" . $orders_products_attributes_id . "', '" . $pID . "', encodeURIComponent(this.value))\" id='p". $pID . "a" . $orders_products_attributes_id . "'>";
+                echo '<br><nobr><small>&nbsp;<i> - ' . 
+                    "<input name='update_products[$pID][attributes][$orders_products_attributes_id][option]' size='10' value='" . oe_html_quotes($order->products[$i]['attributes'][$j]['option']) . "' onChange=\"updateAttributesField('simple', 'products_options', '" . $orders_products_attributes_id . "', '" . $pID . "', encodeURIComponent(this.value))\">" . ': ' . 
+                    "<input name='update_products[$pID][attributes][$orders_products_attributes_id][value]' size='15' value='" . oe_html_quotes($order->products[$i]['attributes'][$j]['value']) . "' onChange=\"updateAttributesField('simple', 'products_options_values', '" . $orders_products_attributes_id . "', '" . $pID . "', encodeURIComponent(this.value))\">" . ': ' . "</i>" .
+                    "<input name='update_products[$pID][attributes][$orders_products_attributes_id][prefix]' size='1' id='p" . $pID . "_" . $orders_products_attributes_id . "_prefix' value='" . $order->products[$i]['attributes'][$j]['prefix'] . "' onKeyUp=\"updatePrices('att_price', '" . $pID . "')\" onChange=\"updateAttributesField('hard', 'price_prefix', '" . $orders_products_attributes_id . "', '" . $pID . "', encodeURIComponent(this.value))\">" . ': ' . 
+                    "<input name='update_products[$pID][attributes][$orders_products_attributes_id][price]' size='7' value='" . $order->products[$i]['attributes'][$j]['price'] . "' onKeyUp=\"updatePrices('att_price', '" . $pID . "')\" onChange=\"updateAttributesField('hard', 'options_values_price', '" . $orders_products_attributes_id . "', '" . $pID . "', encodeURIComponent(this.value))\" id='p". $pID . "a" . $orders_products_attributes_id . "'>";
 
                 echo '</small></nobr>';
             }  //end for ($j=0; $j<sizeof($order->products[$i]['attributes']); $j++) {
@@ -92,9 +101,11 @@
             <td class="dataTableContent" valign="top" align="center"><input style="text-align:right;" type="tel" name="<?php echo "update_products[" . $pID . "][total_excl]"; ?>" size="8" value="<?php echo number_format($order->products[$i]['final_price'] * $order->products[$i]['qty'], 4, '.', ''); ?>" onKeyUp="updatePrices('total_excl', '<?php echo $pID; ?>')" onChange="updateProductsField('reload2', '<?php echo $pID; ?>')" id="<?php echo "update_products[" . $pID . "][total_excl]"; ?>"></td>
             <td class="dataTableContent" valign="top" align="center"><input style="text-align:right;" type="tel" name="<?php echo "update_products[" . $pID . "][total_incl]"; ?>" size="8" value="<?php echo number_format((($order->products[$i]['final_price'] * (($order->products[$i]['tax']/100) + 1))) * $order->products[$i]['qty'], 4, '.', ''); ?>" onKeyUp="updatePrices('total_incl', '<?php echo $pID; ?>')" onChange="updateProductsField('reload2', '<?php echo $pID; ?>')" id="<?php echo "update_products[" . $pID . "][total_incl]"; ?>"></td>
           </tr>
-
 <?php
     }
+?>
+          </tbody>
+<?php
   } else {
     //the order has no products
 ?>

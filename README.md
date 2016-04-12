@@ -26,16 +26,18 @@ en normal se puede, en ajax non-AJAX
 - ver si se puede mandar parte del js a un archivo aparte
 - Eliminar shipping_class de la tabla orders si se elimina el metodo de envio
 - Permitir metodos de envio alternativos
+- ocultar columna currency value si solo hay una moneda
+- espacio alrededor de submit comments
 
 Clarificar el cambio de divisa
 BUGS
 ====
-
+- No se ve el status en la tabla de comentarios
 - ¿borde inferior tabla totales recortado????
+- Tipo de letra muy grande en comentarios
 - ver qué hace la función selectRowEffect!!!!!
 - Ver por qué ahora hace un reload despues de insertar comentarios (igual es por las cabeceras en JS)
-- Comprobar si funciona el email
+- Comprobar si funciona el email - NO
 - Payment method and contact information doesn't show fixed width in chrome
 - Cleanup styles, functions and jscript
 - Revisar eso de shipping same as billing
-- agrandar tooltips en Payment Method, currency y order total. payment method table has no borders

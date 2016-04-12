@@ -1,4 +1,5 @@
     <table style="border: 1px solid #C9C9C9;" cellspacing="0" cellpadding="2" class="dataTableRow" id="commentsTable">
+      <thead>
       <tr class="dataTableHeadingRow">
         <td class="dataTableHeadingContent" align="left"><?= TABLE_HEADING_DELETE ?></td>
         <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
@@ -10,6 +11,7 @@
         <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
         <td class="dataTableHeadingContent" align="left"><?= TABLE_HEADING_COMMENTS ?></td>
       </tr>
+      </thead>
 <?php
       $r = 0;
       $orders_history_query = tep_db_query("SELECT orders_status_history_id, orders_status_id, date_added, customer_notified, comments
@@ -17,11 +19,14 @@
                                             WHERE orders_id = '" . $oID . "'
                                             ORDER BY date_added");
       if (tep_db_num_rows($orders_history_query)) {
+?>
+      <tbody class="rowOver">
+<?php
         while ($orders_history = tep_db_fetch_array($orders_history_query)) {
           $r++;
           $rowClass = ((($r/2) == (floor($r/2))) ? 'dataTableRowOver' : 'dataTableRow');
 ?>
-      <tr class="<?= $rowClass ?>" id="commentRow<?= $orders_history['orders_status_history_id'] ?>" onmouseover="rowOverEffect(this)" onmouseout="rowOutEffect(this, '<?= $rowClass ?>')">
+      <tr class="dataTableRow" id="commentRow<?= $orders_history['orders_status_history_id'] ?>">
         <td class="smallText" align="center"><div id="do_not_delete"><input name="update_comments[<?= $orders_history['orders_status_history_id'] ?>][delete]" type="checkbox" onClick="updateCommentsField('delete', '<?= $orders_history['orders_status_history_id'] ?>', this.checked, '', this)"></div></td>
         <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
         <td class="smallText" align="center"><?= tep_datetime_short($orders_history['date_added']) ?></td>
@@ -41,6 +46,9 @@
       </tr>
 <?php
         }
+?>
+      <tbody>
+<?php
        } else {
 ?>
       <tr>
