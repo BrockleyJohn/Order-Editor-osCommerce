@@ -1,15 +1,11 @@
     <table style="border: 1px solid #C9C9C9;" cellspacing="0" cellpadding="2" class="dataTableRow" id="commentsTable">
       <thead>
       <tr class="dataTableHeadingRow">
-        <td class="dataTableHeadingContent" align="left"><?= TABLE_HEADING_DELETE ?></td>
-        <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
-        <td class="dataTableHeadingContent" align="left"><?= TABLE_HEADING_DATE_ADDED ?></td>
-        <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
-        <td class="dataTableHeadingContent" align="center"><?= TABLE_HEADING_CUSTOMER_NOTIFIED ?></td>
-        <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
-        <td class="dataTableHeadingContent" align="left"><?= TABLE_HEADING_STATUS ?></td>
-        <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
-        <td class="dataTableHeadingContent" align="left"><?= TABLE_HEADING_COMMENTS ?></td>
+        <th class="dataTableHeadingContent" align="left"><?= TABLE_HEADING_DELETE ?></th>
+        <th class="dataTableHeadingContent" align="left"><?= TABLE_HEADING_DATE_ADDED ?></th>
+        <th class="dataTableHeadingContent" align="center"><?= TABLE_HEADING_CUSTOMER_NOTIFIED ?></th>
+        <th class="dataTableHeadingContent" align="left"><?= TABLE_HEADING_STATUS ?></th>
+        <th class="dataTableHeadingContent" align="left"><?= TABLE_HEADING_COMMENTS ?></th>
       </tr>
       </thead>
 <?php
@@ -28,9 +24,7 @@
 ?>
       <tr class="dataTableRow" id="commentRow<?= $orders_history['orders_status_history_id'] ?>">
         <td class="smallText" align="center"><div id="do_not_delete"><input name="update_comments[<?= $orders_history['orders_status_history_id'] ?>][delete]" type="checkbox" onClick="updateCommentsField('delete', '<?= $orders_history['orders_status_history_id'] ?>', this.checked, '', this)"></div></td>
-        <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
         <td class="smallText" align="center"><?= tep_datetime_short($orders_history['date_added']) ?></td>
-        <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
 <?php
           if ($orders_history['customer_notified'] == '1') {
             $orders_history_icon = tep_image(DIR_WS_ICONS . 'tick.gif', ICON_TICK);
@@ -39,9 +33,7 @@
           }
 ?>
         <td class="smallText" align="center"><?= $orders_history_icon ?></td>
-        <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
-        <td class="smallText" align="left"><?= $orders_status_array[$orders_history['orders_status_id']] ?></td>
-        <td class="dataTableHeadingContent" align="left" width="10">&nbsp;</td>
+        <td class="smallText" align="left"><?= tep_get_orders_status([$orders_history['orders_status_id']]) ?>a</td>
         <td class="smallText" align="left"><?= tep_draw_textarea_field("update_comments[" . $orders_history['orders_status_history_id'] . "][comments]", "soft", "40", "5", "" .  tep_db_output($orders_history['comments']) . "", "onChange=\"updateCommentsField('update', '" . $orders_history['orders_status_history_id'] . "', 'false', encodeURIComponent(this.value))\"") ?></td>
       </tr>
 <?php

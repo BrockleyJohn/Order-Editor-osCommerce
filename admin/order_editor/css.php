@@ -15,18 +15,38 @@ table {
 
 input {
   border-width: 1px;
-    border-color:transparent;
-/*    border: hidden; */
-  
+  background-color:transparent;
+  border-color:transparent;
 }
-
 input:hover {
   border-width: 1px;
-/*  border: solid; */
   border-color:orange;
+  background-color:white;
+}
+input[readonly]
+{
+  cursor:not-allowed;
+}
+.align-right {
+  text-align:right;
+  
+}
+.align-left {
+  text-align:left;
   
 }
 
+select {
+  border-width: 1px;
+  background-color:transparent;
+  border-color:transparent;
+}
+
+select:hover {
+  border-width: 1px;
+  border-color:orange;
+  background-color:white;
+}
 
 
 .dataTableHeadingRow {
