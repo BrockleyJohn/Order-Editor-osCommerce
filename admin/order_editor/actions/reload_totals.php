@@ -38,7 +38,9 @@
       }
 
       //this is where we call the order total modules
-      require( 'order_editor/order_total.php');
+//      require( 'order_editor/order_total.php');
+chdir (DIR_FS_CATALOG);
+      require( DIR_FS_CATALOG . 'includes/classes/order_total.php');
       $order_total_modules = new order_total();
       $order_totals = $order_total_modules->process();
       $current_ot_totals_array = array();
