@@ -35,6 +35,20 @@ input[readonly]
   text-align:left;
   
 }
+.align-center {
+  text-align:center;
+}
+.valign-middle {
+  text-align:middle;
+}
+
+.valign-top {
+  text-align:middle;
+}
+.valign-bottom {
+  text-align:bottom;
+}
+
 
 select {
   border-width: 1px;

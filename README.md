@@ -4,6 +4,8 @@ Order editor 4 oscommerce responsive
 agregado     http://www.itgeared.com/articles/1506-how-to-display-image-spinner-ajax-request/
 TODO:
 ====
+- ¡OJO! no suma fixed charge
+
 - Admin module to install/uninstall and remove from main file
   Tablas a añadir para copiar datos:
 

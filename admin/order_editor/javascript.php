@@ -544,6 +544,16 @@ function closeModal() {
     document.getElementById('modal').style.display = 'none';
     document.getElementById('fade').style.display = 'none';
 }
+  function showUrlInDialog(url){
+    var tag = $("<div></div>");
+    $.ajax({
+      url: url,
+      success: function(data) {
+        tag.html(data).dialog({modal: true}).dialog('open');
+      }
+    });
+  }
+
 //--></script>
 
 <?php ?>

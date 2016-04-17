@@ -2,7 +2,7 @@
           <tr><td>
             <table border="0" width="100%" cellspacing="0" cellpadding="0">
               <tr>
-                <td valign="bottom">
+                <td class="valign-bottom">
 <?php
   if (sizeof($shipping_quotes) > 0) {
 ?>
@@ -23,13 +23,13 @@
 ?>
                   <tbody class="rowOver" id= "shipping_quote">
                   <tr class="dataTableRow" onClick="selectRowEffect(this, <?= $r ?>); setShipping(<?= $r ?>);">
-                    <td class="dataTableContent align-left" valign="top" width="15px">
+                    <td class="dataTableContent align-left valign-top" width="15px">
                       <input type="radio" name="shipping" id="shipping_radio_<?= $r ?>" value="<?= $shipping_quotes[$i]['id'] ?>_<?= $shipping_quotes[$i]['methods'][$j]['id'] ?>">
                       <input type="hidden" id="update_shipping[<?= $r ?>][title]" name="update_shipping[<?= $r ?>][title]" value="<?= $shipping_quotes[$i]['module'] ?> (<?= $shipping_quotes[$i]['methods'][$j]['title'] ?>):">
                       <input type="hidden" id="update_shipping[<?= $r ?>][value]" name="update_shipping[<?= $r ?>][value]" value="<?= tep_add_tax($shipping_quotes[$i]['methods'][$j]['cost'], $shipping_quotes[$i]['tax']) ?>">
                       <input type="hidden" id="update_shipping[<?= $r ?>][id]" name="update_shipping[<?= $r ?>][id]" value="<?= $shipping_quotes[$i]['id'] ?>_<?= $shipping_quotes[$i]['methods'][$j]['id'] ?>">
                     </td>
-                    <td class="dataTableContent" valign="top"><?= $shipping_quotes[$i]['module'] ?> (<?= $shipping_quotes[$i]['methods'][$j]['title'] ?>):</td>
+                    <td class="dataTableContent valign-top"><?= $shipping_quotes[$i]['module'] ?> (<?= $shipping_quotes[$i]['methods'][$j]['title'] ?>):</td>
                     <td class="dataTableContent align-right"><?= $currencies->format(tep_add_tax($shipping_quotes[$i]['methods'][$j]['cost'], $shipping_quotes[$i]['tax']), true, $order->info['currency'], $order->info['currency_value']) ?></td>
                   </tr>
                   </tbody>
@@ -52,7 +52,7 @@
                 </td>
                 <!-- order_totals bof //-->
                 <br />
-                <td class="dataTableRow align-right" rowspan="2" valign="top" nowrap  style="border: 1px solid #C9C9C9;width:10%;">
+                <td class="dataTableRow align-right valign-top" rowspan="2" nowrap  style="border: 1px solid #C9C9C9;width:10%;">
                   <table id="totals_table" cellspacing="0" cellpadding="2">
                     <thead>
                     <tr class="dataTableHeadingRow">
@@ -91,7 +91,7 @@
 <?php
       if ($order->totals[$i]['class'] != 'ot_total') {
 ?>
-                    <td class="dataTableContent" valign="middle" height="15">
+                    <td class="dataTableContent valign-middle" height="15">
                       <span id="update_totals[<?= $i ?>]">
                         <a href="javascript:setCustomOTVisibility('update_totals[<?= ($i+1) ?>]', 'visible', 'update_totals[<?= $i ?>]');">
                           <span title="<?= IMAGE_ADD_NEW_OT ?>" id="icon-add" class="ui-icon ui-icon-circle-plus"></span>
@@ -101,12 +101,12 @@
 <?php
       } else {
 ?>
-                      <td class="dataTableContent" valign="middle">&nbsp;</td>
+                      <td class="dataTableContent valign-middle">&nbsp;</td>
 <?php
       }
 ?>
                       <td class="dataTableContent align-right">
-                       <input name="update_totals[<?= $i ?>][title]" value="<?= trim($order->totals[$i]['title']) ?>" readonly="readonly">
+                        <input name="update_totals[<?= $i ?>][title]" value="<?= trim($order->totals[$i]['title']) ?>" readonly="readonly">
                       </td>
 <?php
       if ($order->info['currency'] != DEFAULT_CURRENCY) {
@@ -115,14 +115,18 @@
 <?php
       }
 ?>
-                      <td class="dataTableContent align-right" nowrap><?= $order->totals[$i]['text'] ?><input name="update_totals[<?= $i ?>][value]" type="hidden" value="<?= number_format (floatval($order->totals[$i]['value']), 2, '.', '') ?>"><input name="update_totals[<?= $i ?>][class]" type="hidden" value="<?= $order->totals[$i]['class'] ?>"></td>
+                      <td class="dataTableContent align-right" nowrap>
+                        <?= $order->totals[$i]['text'] ?>
+                        <input name="update_totals[<?= $i ?>][value]" type="hidden" value="<?= number_format (floatval($order->totals[$i]['value']), 2, '.', '') ?>">
+                        <input name="update_totals[<?= $i ?>][class]" type="hidden" value="<?= $order->totals[$i]['class'] ?>">
+                      </td>
                     </tr>
 <?php
     } else { // si no es subtotal, total, tax o loworder_fee
       if ($i % 2) {
 ?>
                 <tr class="dataTableRow" id="update_totals[<?= $i ?>]" style="visibility: hidden; display: none;">
-                  <td class="dataTableContent" valign="middle" height="15">
+                  <td class="dataTableContent valign-middle" height="15">
                     <a href='javascript:setCustomOTVisibility("update_totals[<?= $i ?>]", "hidden", "update_totals[<?= ($i-1) ?>]")'>
                       <span title="<?= IMAGE_REMOVE_NEW_OT ?>" id="icon-remove" class="ui-icon ui-icon-circle-minus ui-icon-red"></span>
                     </a>
@@ -131,7 +135,7 @@
       } else {
 ?>
                   <tr class="dataTableRow">
-                    <td class="dataTableContent" valign="middle" height="15">
+                    <td class="dataTableContent valign-middle" height="15">
                       <span id="update_totals[<?= $i ?>]">
                       <a href="javascript:setCustomOTVisibility('update_totals[<?= ($i+1) ?>]', 'visible', 'update_totals[<?= $i ?>]');">
                         <span title="<?= IMAGE_ADD_NEW_OT ?>" id="icon-add2" class="ui-icon ui-icon-circle-plus"></span>
@@ -145,7 +149,7 @@
                       <input name="update_totals[<?= $i ?>][title]" id="<?= $id ?>[title]" value="<?= trim($order->totals[$i]['title']) ?>" onChange="obtainTotals()">
                     </td>
                     <td class="dataTableContent align-right">
-                      <input name="update_totals[<?= $i ?>][value]" id="<?= $id ?>[value]" value="<?= number_format (floatval($order->totals[$i]['value']), 2, '.', '') ?>" size="6" onChange="obtainTotals()">
+                      <input class="align-right" name="update_totals[<?= $i ?>][value]" id="<?= $id ?>[value]" value="<?= number_format (floatval($order->totals[$i]['value']), 2, '.', '') ?>" size="6" onChange="obtainTotals()">
                       <input name="update_totals[<?= $i ?>][class]" type="hidden" value="<?= $order->totals[$i]['class'] ?>">
                       <input name="update_totals[<?= $i ?>][id]" type="hidden" value="<?= $shipping_module_id ?>" id="<?= $id ?>[id]">
                     </td>

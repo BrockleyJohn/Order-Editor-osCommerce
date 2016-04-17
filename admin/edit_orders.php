@@ -21,9 +21,9 @@
     // check for database field shipping_module on table orders. Move later to a module
    if (!tep_db_num_rows(tep_db_query("SHOW COLUMNS FROM orders LIKE 'shipping_module'"))) {
     tep_db_query ("alter table orders add shipping_module varchar(255) NULL");
-    // este campo ser· para saber si el pedido ha sido alterado manualmente
-    // se incluir· un boton para volver a la versiÛn original que comprobar· ese campo
-    // habr· que crear tablas nuevas para el backup: oe_orders, oe_orders_products...
+    // este campo ser√° para saber si el pedido ha sido alterado manualmente
+    // se incluir√° un boton para volver a la versi√≥n original que comprobar√° ese campo
+    // habr√° que crear tablas nuevas para el backup: oe_orders, oe_orders_products...
    }
 
   // require the appropriate functions & classes
@@ -246,7 +246,7 @@ $(function() {
 });
 </script>
 
-<div class="contentContainer" style="float:left;widt:100%;">
+<div class="contentContainer" style="float:left;width:100%;">
  <?php
    if (($action == 'edit') && ($order_exists == true)) {
 
