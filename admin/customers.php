@@ -623,7 +623,7 @@ function check_form() {
   if ($processed == true) {
     echo $cInfo->customers_fax . tep_draw_hidden_field('customers_fax');
   } else {
-    echo tep_draw_input_field('customers_fax', $cInfo->customers_fax, 'maxlength="32"');
+    echo tep_draw_input_field('customers_fax', $cInfo->customers_fax, 'maxlength="16"');
   }
 ?></td>
           </tr>

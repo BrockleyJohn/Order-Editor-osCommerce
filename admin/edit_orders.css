@@ -1,0 +1,54 @@
+body {
+
+}
+/* data table */
+.dataTableHeadingRow { background-color: #669FC7;; }
+.dataTableHeadingContent { color: #ffffff; font-weight: bold; }
+.dataTableRow {
+  background-color: #F0F1F1; 
+  }
+.dataTableRowSelected { background-color: #DEE4E8; }
+.dataTableContent {
+  color: #000000; 
+
+  }
+table
+{
+  border-spacing:0px;
+}
+#barullo{
+display : inline-block;
+  float: left;
+
+}
+.infoblock {
+  
+  float: left;
+padding: 5px;
+}
+.total {
+
+  float: left;
+  width: 100%;
+border: 1px solid #D5D5D5;
+}
+
+th, td { padding: 2px; }
+  INPUT, TEXTAREA{
+  border: 1px solid #D5D5D5;
+  font-size: 12px;
+  }
+  
+  INPUT:focus, TEXTAREA:focus {
+  border-color: #F59942;
+  }
+  
+  select
+{
+    margin-left: 2px;
+border: 1px solid #D5D5D5;
+}
+select:focus {
+  
+      border-color: #F59942;
+}
